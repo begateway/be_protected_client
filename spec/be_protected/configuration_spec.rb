@@ -10,7 +10,7 @@ describe BeProtected::Configuration do
         config.url = url
       end
 
-      described_class.url.should == url
+      expect(described_class.url).to eq(url)
     end
 
     it "sets proxy" do
@@ -18,7 +18,7 @@ describe BeProtected::Configuration do
         config.proxy = proxy
       end
 
-      described_class.proxy.should == proxy
+      expect(described_class.proxy).to eq(proxy)
     end
   end
 end
