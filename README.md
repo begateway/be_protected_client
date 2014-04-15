@@ -17,8 +17,15 @@ Or install it yourself as:
     $ gem install be_protected_client
 
 ## Usage
+---------------------------
 
-TODO: Write usage instructions here
+### Configuration
+     ```ruby
+        BeProtected::Configuration do |config|
+            config.url   = "http://be_protected.com:8907/"
+            config.proxy = "http://192.168.66.1:3456/"
+        end
+    ```
 
 ## Contributing
 
