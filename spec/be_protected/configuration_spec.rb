@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe BeProtected::Configuration do
-  let(:url)   { "http://be_protected.com:5689/" }
+  let(:url)   { "http://beprotected.com:5689/" }
   let(:proxy) { "http://127.0.0.1:3214/" }
 
   describe ".setup" do

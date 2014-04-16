@@ -24,6 +24,14 @@ module BeProtected
         !success?
       end
 
+      def self.response_attributes(*attributes)
+        attributes.each do |attr|
+          define_method(attr) do   # def uuid
+            body[attr.to_s]        #   body["uuid"]
+          end                      # end
+        end
+      end
+
       protected
       def body
         @body ||= begin
