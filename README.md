@@ -48,7 +48,7 @@ end
     end
 
     # update account
-    john = account.update(name: "John")
+    john = account.update(response.uuid, name: "John")
 
     if john.failed?
         puts "Can't update account: " + john.error
