@@ -35,7 +35,7 @@ end
     account = BeProtected::Account.new(credentials)
 
     # create account
-    response = account.create(name: "Jane")
+    response = account.create("Jane")
 
     puts "Status = " + response.status
 
