@@ -1,4 +1,5 @@
 require 'spec_helper'
+require 'shared_examples/responses'
 
 describe BeProtected::Account do
   let(:header) { {'Content-Type' => 'application/json'} }
@@ -18,33 +19,41 @@ describe BeProtected::Account do
       let(:status)   { 201 }
       let(:response) { {uuid: "1B", token:"tok3", name:"Jane"}.to_json }
 
-      its(:success?) { should be_true }
       its(:status)   { should == 201 }
       its(:uuid)     { should == "1B" }
       its(:name)     { should == "Jane" }
       its(:token)    { should == "tok3" }
-      its(:failed?)  { should be_false }
+      it_behaves_like "successful response"
     end
 
-    context "when response is faled" do
-      let(:status)   { 404 }
-      let(:response) { '{"error":"Bad request"}' }
+    it_behaves_like "failed response"
+    it_behaves_like "unknown response"
+  end
 
-      its(:failed?)  { should be_true }
-      its(:status)   { should == 404 }
-      its(:error)    { should == "Bad request" }
-      its(:success?) { should be_false }
+  describe ".get" do
+    let(:account) do
+      described_class.new do |builder|
+        builder.adapter :test do |stub|
+          stub.get('/accounts/uuid2')  { |env| [status, header, response] }
+        end
+      end
     end
 
-    context "when response is unknown" do
-      let(:status)   { 415 }
-      let(:response) { nil }
+    subject { account.get("uuid2") }
 
-      its(:failed?)  { should be_true }
-      its(:status)   { should == 415 }
-      its(:error)    { should == "Unknown response. Status is 415." }
-      its(:success?) { should be_false }
+    context "when response is successful" do
+      let(:status)   { 200 }
+      let(:response) { {uuid: "uuid2", token:"tok3", name:"Jane"}.to_json }
+
+      its(:status)   { should == 200 }
+      its(:uuid)     { should == "uuid2" }
+      its(:name)     { should == "Jane" }
+      its(:token)    { should == "tok3" }
+      it_behaves_like "successful response"
     end
+
+    it_behaves_like "failed response"
+    it_behaves_like "unknown response"
   end
 
 end

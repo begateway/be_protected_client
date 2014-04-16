@@ -5,5 +5,14 @@ module BeProtected
       Response::Account.new request(:post, "/accounts", {name: name})
     end
 
+    def get(uuid)
+      Response::Account.new request(:get, resource_path(uuid))
+    end
+
+    private
+    def resource_path(uuid)
+      "/accounts/#{uuid}"
+    end
+
   end
 end
