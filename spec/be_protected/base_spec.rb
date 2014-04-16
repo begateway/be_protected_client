@@ -33,7 +33,11 @@ describe BeProtected::Base do
     end
 
     subject do
-      described_class.new(opts) { |builder| builder.adapter :test }
+      described_class.new(opts) do |builder|
+        builder.adapter :test do |stub|
+          stub.get('/headers') { |env| [200, {}, env[:request_headers]] }
+        end
+      end
     end
 
     it "assigns url from configuration" do
@@ -43,19 +47,36 @@ describe BeProtected::Base do
     end
 
     it "assigns proxy from configuration" do
-      expect(subject.connection.proxy).to eq(Faraday::ProxyOptions.from(proxy))
+      require 'uri'
+      expect(subject.connection.proxy[:uri].to_s).to eql(proxy)
     end
 
     it "configures Faraday connection" do
       builder  = double('builder')
+      adapter  = double('adapter')
       connection = double('connection')
 
       allow(connection).to receive(:build).and_yield(builder)
       allow(Faraday::Connection).to receive(:new).and_return(connection)
+      allow(Faraday).to receive(:default_adapter).and_return(adapter)
+      expect(connection).to receive(:adapter).with(adapter)
 
+      allow(connection).to receive(:basic_auth)
+      allow(connection).to receive(:request)
+      allow(connection).to receive(:response)
       expect(builder).to receive(:adapter).with(:test)
 
       subject.connection
+    end
+
+    it "assigns basic authorization header" do
+      body = subject.connection.get('/headers').body
+      expect(body['Authorization']).to eq(basic_auth_header(auth_login, auth_password))
+    end
+
+    it "assigns application/json for Content-Type header" do
+      body = subject.connection.get('/headers').body
+      expect(body['Content-Type']).to eq('application/json')
     end
   end
 

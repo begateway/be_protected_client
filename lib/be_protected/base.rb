@@ -1,4 +1,5 @@
 require 'faraday'
+require 'faraday_middleware'
 
 module BeProtected
   class Base
@@ -18,9 +19,15 @@ module BeProtected
       @connection ||=
         begin
           connection = Faraday.new(site_url, connection_opts)
-          connection.build do |b|
-            options[:connection_build].call(b)
+          connection.adapter Faraday.default_adapter
+
+          connection.build do |builder|
+            options[:connection_build].call(builder)
           end if options[:connection_build]
+
+          connection.basic_auth(auth_login, auth_password)
+          connection.request :json
+          connection.response :json
 
           connection
         end
