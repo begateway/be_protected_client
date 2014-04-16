@@ -9,6 +9,10 @@ module BeProtected
       Response::Limit.new request(:post, resource_path(uuid), params)
     end
 
+    def get(uuid)
+      Response::Limit.new request(:get, resource_path(uuid))
+    end
+
     private
     def resource_path(uuid)
       "/limits/#{uuid}"

@@ -63,4 +63,33 @@ describe BeProtected::Limit do
     it_behaves_like "unknown response"
   end
 
+  describe ".get" do
+    let(:params) { {key: "EUR_ID", volume: 2000, count: 245, max: 55} }
+    let(:limit) do
+      described_class.new(credentials) do |builder|
+        builder.adapter :test do |stub|
+          stub.get('/limits/uuid5')  { |env| [status, header, response] }
+        end
+      end
+    end
+
+    subject { limit.get("uuid5") }
+
+    context "when response is successful" do
+      let(:status)   { 200 }
+      let(:response) { params.update(uuid: "uuid5").to_json }
+
+      its(:status) { should == 200 }
+      its(:uuid)   { should == params[:uuid] }
+      its(:key)    { should == params[:key] }
+      its(:max)    { should == params[:max] }
+      its(:count)  { should == params[:count] }
+      its(:volume) { should == params[:volume] }
+      it_behaves_like "successful response"
+    end
+
+    it_behaves_like "failed response"
+    it_behaves_like "unknown response"
+  end
+
 end
