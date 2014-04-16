@@ -28,6 +28,46 @@ BeProtected::Configuration do |config|
 end
 ```
 
+### Managing accounts
+
+```ruby
+    credentials = {auth_login: 'login', auth_password: 'password'}
+    account = BeProtected::Account.new(credentials)
+
+    # create account
+    response = account.create(name: "Jane")
+
+    puts "Status = " + response.status
+
+    if response.success?
+        puts "Uuid = " + response.uuid
+        puts "Name = " + response.name
+        puts "Token = " + response.token
+    else
+        puts "Error #{response.error}"
+    end
+
+    # update account
+    john = account.update(name: "John")
+
+    if john.failed?
+        puts "Can't update account: " + john.error
+    else
+        puts "Name was successfully updated to " + john.name
+    end
+
+    # get account
+    response = account.get(john.uuid)
+
+    if response.success?
+        puts "Uuid = " + response.uuid
+        puts "Name = " + response.name
+        puts "Token = " + response.token
+    else
+        puts "Error #{response.error}"
+    end
+```
+
 ## Contributing
 
 1. Fork it
