@@ -1,3 +1,4 @@
+require 'json'
 require 'faraday'
 require 'faraday_middleware'
 
@@ -31,6 +32,16 @@ module BeProtected
 
           connection
         end
+    end
+
+    protected
+    def request(method, path, params = nil)
+      connection.send(method, path, params) do |req|
+        if method == :post
+          req.headers['Content-Type'] = 'application/json'
+          req.body = params.to_json if params
+        end
+      end
     end
 
     private
