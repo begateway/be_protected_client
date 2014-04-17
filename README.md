@@ -95,14 +95,25 @@ else
 end
 
 # get limit
-response = limit.get(updated.uuid)
-if response.success?
-    puts "Key = " + response.key
-    puts "Max = " + response.max
-    puts "Count = " + response.count
-    puts "Volume = " + response.volume
+gw_limit = limit.get(updated.uuid)
+if gw_limit.success?
+    puts "Key = " + gw_limit.key
+    puts "Max = " + gw_limit.max
+    puts "Count = " + gw_limit.count
+    puts "Volume = " + gw_limit.volume
 else
-    puts "Error #{response.error}"
+    puts "Error #{gw_limit.error}"
+end
+
+# decrease limit
+value = 10                    # transaction amount
+created_at = Time.now.utc     # transaction created_at
+
+response = limit.decrease(gw_limit.key, created_at: created_at, value: value)
+if response.success?
+    puts response.message
+else
+    puts "Limit doesn't decreased!"
 end
 ```
 

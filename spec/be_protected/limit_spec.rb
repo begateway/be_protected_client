@@ -92,4 +92,30 @@ describe BeProtected::Limit do
     it_behaves_like "unknown response"
   end
 
+  describe ".decrease" do
+    let(:params) { {created_at: "2014-04-17 10:47:40", value: 55} }
+    let(:limit) do
+      described_class.new(credentials) do |builder|
+        builder.adapter :test do |stub|
+          stub.post('/limits/key/decrease', params.to_json)  { |env| [status, header, response] }
+        end
+      end
+    end
+
+    subject { limit.decrease("key", params) }
+
+    context "when response is successful" do
+      let(:message)  { 'Successfully decreased.' }
+      let(:status)   { 200 }
+      let(:response) { {message: message}.to_json }
+
+      its(:status)  { should == 200 }
+      its(:message) { should == message}
+      it_behaves_like "successful response"
+    end
+
+    it_behaves_like "failed response"
+    it_behaves_like "unknown response"
+  end
+
 end

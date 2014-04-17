@@ -53,13 +53,10 @@ describe BeProtected::Base do
 
     it "configures Faraday connection" do
       builder  = double('builder')
-      adapter  = double('adapter')
       connection = double('connection')
 
       allow(connection).to receive(:build).and_yield(builder)
       allow(Faraday::Connection).to receive(:new).and_return(connection)
-      allow(Faraday).to receive(:default_adapter).and_return(adapter)
-      expect(connection).to receive(:adapter).with(adapter)
 
       allow(connection).to receive(:basic_auth)
       allow(connection).to receive(:request).with(:json)

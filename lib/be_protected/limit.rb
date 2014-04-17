@@ -13,6 +13,10 @@ module BeProtected
       Response::Limit.new request(:get, resource_path(uuid))
     end
 
+    def decrease(key, params)
+      Response::Limit.new request(:post, resource_path(key) + '/decrease', params)
+    end
+
     private
     def resource_path(uuid = nil)
       "/limits".tap do |path|
