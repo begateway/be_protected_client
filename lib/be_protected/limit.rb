@@ -2,7 +2,7 @@ module BeProtected
   class Limit < Base
 
     def create(params)
-      Response::Limit.new request(:post, "/limits", params)
+      Response::Limit.new request(:post, resource_path, params)
     end
 
     def update(uuid, params)
@@ -14,8 +14,10 @@ module BeProtected
     end
 
     private
-    def resource_path(uuid)
-      "/limits/#{uuid}"
+    def resource_path(uuid = nil)
+      "/limits".tap do |path|
+        path << "/#{uuid}" if uuid
+      end
     end
 
   end
