@@ -13,7 +13,7 @@ module BeProtected
       @options = {
         connection_opts:  opts[:connection_opts],
         connection_build: block
-     }
+      }
     end
 
     def connection
