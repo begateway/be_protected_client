@@ -34,13 +34,11 @@ module BeProtected
 
       protected
       def body
-        @body ||= begin
-                     response.body.is_a?(Hash) ? response.body : {}
-                   end
+        @body ||= response.body.is_a?(Hash) ? response.body : {}
       end
 
       def unknown_error
-        "Unknown response. Status is #{status.to_s}."
+        "Unknown response. Status is #{status}."
       end
 
     end

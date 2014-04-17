@@ -62,21 +62,11 @@ describe BeProtected::Base do
       expect(connection).to receive(:adapter).with(adapter)
 
       allow(connection).to receive(:basic_auth)
-      allow(connection).to receive(:request)
-      allow(connection).to receive(:response)
+      allow(connection).to receive(:request).with(:json)
+      allow(connection).to receive(:response).with(:json)
       expect(builder).to receive(:adapter).with(:test)
 
       subject.connection
-    end
-
-    it "assigns basic authorization header" do
-      body = subject.connection.get('/headers').body
-      expect(body['Authorization']).to eq(basic_auth_header(auth_login, auth_password))
-    end
-
-    it "assigns application/json for Content-Type header" do
-      body = subject.connection.get('/headers').body
-      expect(body['Content-Type']).to eq('application/json')
     end
   end
 

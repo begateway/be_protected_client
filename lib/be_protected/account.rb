@@ -2,7 +2,7 @@ module BeProtected
   class Account < Base
 
     def create(name)
-      Response::Account.new request(:post, "/accounts", {name: name})
+      Response::Account.new request(:post, resource_path, {name: name})
     end
 
     def get(uuid)
@@ -14,8 +14,10 @@ module BeProtected
     end
 
     private
-    def resource_path(uuid)
-      "/accounts/#{uuid}"
+    def resource_path(uuid = nil)
+      "/accounts".tap do |path|
+        path << "/#{uuid}" if uuid
+      end
     end
 
   end
