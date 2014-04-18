@@ -109,7 +109,7 @@ end
 value = 10                    # transaction amount
 created_at = Time.now.utc     # transaction created_at
 
-response = limit.decrease(gw_limit.key, created_at: created_at, value: value)
+response = limit.decrease(gw_limit.uuid, created_at: created_at, value: value)
 if response.success?
     puts response.message
 else

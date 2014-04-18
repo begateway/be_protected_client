@@ -97,12 +97,12 @@ describe BeProtected::Limit do
     let(:limit) do
       described_class.new(credentials) do |builder|
         builder.adapter :test do |stub|
-          stub.post('/limits/key/decrease', params.to_json)  { |env| [status, header, response] }
+          stub.post('/limits/uuid5/decrease', params.to_json)  { |env| [status, header, response] }
         end
       end
     end
 
-    subject { limit.decrease("key", params) }
+    subject { limit.decrease("uuid5", params) }
 
     context "when response is successful" do
       let(:message)  { 'Successfully decreased.' }
