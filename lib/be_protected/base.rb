@@ -20,7 +20,6 @@ module BeProtected
       @connection ||=
         begin
           connection = Faraday.new(site_url, connection_opts)
-          connection.adapter Faraday.default_adapter
 
           connection.build do |builder|
             options[:connection_build].call(builder)

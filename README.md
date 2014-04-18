@@ -31,41 +31,90 @@ end
 ### Managing accounts
 
 ```ruby
-    credentials = {auth_login: 'login', auth_password: 'password'}
-    account = BeProtected::Account.new(credentials)
+credentials = {auth_login: 'login', auth_password: 'password'}
+account = BeProtected::Account.new(credentials)
 
-    # create account
-    response = account.create("Jane")
+# create account
+response = account.create("Jane")
+puts "Response HTTP Status = " + response.status
+if response.success?
+    puts "Uuid = " + response.uuid
+    puts "Name = " + response.name
+    puts "Token = " + response.token
+else
+    puts "Error #{response.error}"
+end
 
-    puts "Status = " + response.status
+# update account
+john = account.update(response.uuid, name: "John")
+if john.failed?
+    puts "Can't update account: " + john.error
+else
+    puts "Name was successfully updated to " + john.name
+end
 
-    if response.success?
-        puts "Uuid = " + response.uuid
-        puts "Name = " + response.name
-        puts "Token = " + response.token
-    else
-        puts "Error #{response.error}"
-    end
+# get account
+response = account.get(john.uuid)
+if response.success?
+    puts "Name = " + response.name
+    puts "Token = " + response.token
+else
+    puts "Error #{response.error}"
+end
+```
 
-    # update account
-    john = account.update(response.uuid, name: "John")
+### Managing limits
 
-    if john.failed?
-        puts "Can't update account: " + john.error
-    else
-        puts "Name was successfully updated to " + john.name
-    end
+```ruby
+beprotected_credentials = {auth_login: 'login', auth_password: 'password'}
+account = BeProtected::Account.new(beprotected_credentials)
 
-    # get account
-    response = account.get(john.uuid)
+credentials = {auth_login: account.uuid, auth_password: account.token}
+limit = BeProtected::Limit.new(credentials)
 
-    if response.success?
-        puts "Uuid = " + response.uuid
-        puts "Name = " + response.name
-        puts "Token = " + response.token
-    else
-        puts "Error #{response.error}"
-    end
+# create limit
+response = limit.create(key: "USD_ID", volume: 1000, count: 145, max: 45)
+puts "Response HTTP Status = " + response.status
+if response.success?
+    puts "Uuid = " + response.uuid
+    puts "Key = " + response.key
+    puts "Max = " + response.max
+    puts "Count = " + response.count
+    puts "Volume = " + response.volume
+else
+    puts "Error #{response.error}"
+end
+
+# update limit
+updated = limit.update(response.uuid, count: 10, volume: 450)
+if updated.failed?
+    puts "Can't update limit: " + updated.error
+else
+    puts "Count was successfully updated to "  + updated.count
+    puts "Volume was successfully updated to " + updated.volume
+end
+
+# get limit
+gw_limit = limit.get(updated.uuid)
+if gw_limit.success?
+    puts "Key = " + gw_limit.key
+    puts "Max = " + gw_limit.max
+    puts "Count = " + gw_limit.count
+    puts "Volume = " + gw_limit.volume
+else
+    puts "Error #{gw_limit.error}"
+end
+
+# decrease limit
+value = 10                    # transaction amount
+created_at = Time.now.utc     # transaction created_at
+
+response = limit.decrease(gw_limit.uuid, created_at: created_at, value: value)
+if response.success?
+    puts response.message
+else
+    puts "Limit doesn't decreased!"
+end
 ```
 
 ## Contributing
