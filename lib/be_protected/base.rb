@@ -54,7 +54,5 @@ module BeProtected
       Configuration.url
     end
 
-
-
   end
 end
