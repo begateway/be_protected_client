@@ -14,7 +14,7 @@ module BeProtected
       def error_messages
         "".tap do |errors|
           verifications.keys.each do |key|
-            if verifications[key].error
+            if verifications[key].error?
               errors << key.capitalize << ": " << verifications[key].error
             end
           end
