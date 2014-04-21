@@ -2,7 +2,7 @@ module BeProtected
   module Response
     class Account < Base
 
-      response_attributes :uuid, :name, :token
+      key_reader :uuid, :name, :token, for: :body
 
     end
   end

@@ -3,7 +3,7 @@ require 'shared_examples/responses'
 
 describe BeProtected::Limit do
   let(:header) { {'Content-Type' => 'application/json'} }
-  let(:credentials) { {auth_login: 'account_uuid', auth_password: 'account_login'} }
+  let(:credentials) { {auth_login: 'account_uuid', auth_password: 'account_token'} }
 
   describe ".create" do
     let(:params) { {key: "USD_ID", volume: 1000, count: 145, max: 45} }
