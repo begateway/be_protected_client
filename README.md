@@ -117,6 +117,41 @@ else
 end
 ```
 
+### Verifications
+
+```ruby
+beprotected_credentials = {auth_login: 'login', auth_password: 'password'}
+account = BeProtected::Account.new(beprotected_credentials)
+
+credentials = {auth_login: account.uuid, auth_password: account.token}
+verification = BeProtected::Verification.new(credentials)
+
+# verify
+verification_params = {
+    limit: {
+        key: 'USD_567',
+        volume: 585     # transaction amount
+    }
+}
+result = verification.verify(verification_params)
+if result.success?
+    if result.passed?
+        puts "All verifications was passed."
+        puts "Current volume: " + result.limit.current_volume
+        puts "Current count: "  + result.limit.current_count
+    else
+        puts "Some verifications wasn't passed."
+        puts "Transaction volume per month exceed: " + result.limit.volume  # true or false
+        puts "Transaction count per month exceed: "  + result.limit.count   # true or false
+        puts "Max amount per transaction: "          + result.limit.max     # true or false
+    end
+
+    if result.error?
+        puts "Some errors: " + result.error_messages
+    end
+end
+```
+
 ## Contributing
 
 1. Fork it

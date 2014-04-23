@@ -1,6 +1,9 @@
+require "be_protected/response/attributes"
+
 module BeProtected
   module Response
     class Base
+      extend ::BeProtected::Response::Attributes
 
       attr_reader :response
 
@@ -22,14 +25,6 @@ module BeProtected
 
       def failed?
         !success?
-      end
-
-      def self.response_attributes(*attributes)
-        attributes.each do |attr|
-          define_method(attr) do   # def uuid
-            body[attr.to_s]        #   body["uuid"]
-          end                      # end
-        end
       end
 
       protected

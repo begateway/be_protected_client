@@ -2,7 +2,7 @@ module BeProtected
   module Response
     class Limit < Base
 
-      response_attributes :uuid, :key, :max, :count, :volume, :message
+      key_reader :uuid, :key, :max, :count, :volume, :message, for: :body
 
     end
   end
