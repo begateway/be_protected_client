@@ -30,6 +30,7 @@ describe BeProtected::Verification do
 
       its(:status) { should == 200 }
       its(:error?) { should be_false }
+      its(:to_hash) { should == response }
 
       it_behaves_like "successful response"
 
