@@ -11,6 +11,14 @@ module BeProtected
         verifications.any? && verifications.values.any?(&:error?)
       end
 
+      def to_hash
+        {}.tap do |hash|
+          verifications.keys.each do |key|
+            hash[key.to_sym] = verifications[key].to_hash
+          end
+        end
+      end
+
       def error_messages
         "".tap do |errors|
           verifications.keys.each do |key|

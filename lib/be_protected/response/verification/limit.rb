@@ -23,6 +23,11 @@ module BeProtected
           attributes.has_key?("error")
         end
 
+        def to_hash
+          {volume: volume, count: count, max: max,
+            current_volume: current_volume, current_count: current_count}
+        end
+
       end
     end
   end
