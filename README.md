@@ -67,7 +67,7 @@ end
 
 ```ruby
 beprotected_credentials = {auth_login: 'login', auth_password: 'password'}
-account = BeProtected::Account.new(beprotected_credentials)
+account = BeProtected::Account.new(beprotected_credentials).create('Account name')
 
 credentials = {auth_login: account.uuid, auth_password: account.token}
 limit = BeProtected::Limit.new(credentials)
@@ -121,7 +121,7 @@ end
 
 ```ruby
 beprotected_credentials = {auth_login: 'login', auth_password: 'password'}
-account = BeProtected::Account.new(beprotected_credentials)
+account = BeProtected::Account.new(beprotected_credentials).create('Account name')
 
 credentials = {auth_login: account.uuid, auth_password: account.token}
 verification = BeProtected::Verification.new(credentials)
@@ -150,6 +150,9 @@ if result.success?
         puts "Some errors: " + result.error_messages
     end
 end
+
+puts "Response as hash:"
+result.to_hash # => {limit: {volume: true, count: true, max: true, current_volume: 200, current_count: 15}}
 ```
 
 ## Contributing

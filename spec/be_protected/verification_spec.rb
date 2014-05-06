@@ -66,11 +66,13 @@ describe BeProtected::Verification do
       let(:response) { { limit: {
             error: "Cannot verify limits." }
         } }
+      let(:hash_response) { {limit: {volume: nil, count: nil, max: nil, current_volume: nil, current_count: nil} } }
 
       its(:status)  { should == 200 }
       its(:passed?) { should be_true }
       its(:error?)  { should be_true }
       its(:error_messages) { should == "Limit: #{response[:limit][:error]}" }
+      its(:to_hash) { should == hash_response }
     end
 
     it_behaves_like "failed response"
