@@ -130,7 +130,7 @@ verification = BeProtected::Verification.new(credentials)
 verification_params = {
     limit: {
         key: 'USD_567',
-        volume: 585     # transaction amount
+        value: 585     # transaction amount
     }
 }
 result = verification.verify(verification_params)
