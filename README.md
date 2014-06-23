@@ -117,6 +117,43 @@ else
 end
 ```
 
+### Managing blacklist
+
+```ruby
+beprotected_credentials = {auth_login: 'login', auth_password: 'password'}
+account = BeProtected::Account.new(beprotected_credentials).create('Account name')
+
+credentials = {auth_login: account.uuid, auth_password: account.token}
+blacklist = BeProtected::Blacklist.new(credentials)
+
+# add to blacklist
+response = blacklist.add("some value")
+puts "Response HTTP Status = " + response.status
+if response.success?
+    puts "Value = " + response.value
+    puts "Persisted = " + response.persisted
+else
+    puts "Error #{response.error}"
+end
+
+# get value from blacklist
+response = blacklist.get("some value")
+if response.success?
+    puts "Value = " + response.value
+    puts "Persisted = " + response.persisted
+else
+    puts "Error #{response.error}"
+end
+
+# delete value from blacklist
+response = blacklist.delete("some value")
+if response.success?
+    puts "Value was deleted from blacklist"
+else
+    puts "Error #{response.error}"
+end
+```
+
 ### Verifications
 
 ```ruby
