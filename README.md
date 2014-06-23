@@ -154,6 +154,43 @@ else
 end
 ```
 
+### Managing whitelist
+
+```ruby
+beprotected_credentials = {auth_login: 'login', auth_password: 'password'}
+account = BeProtected::Account.new(beprotected_credentials).create('Account name')
+
+credentials = {auth_login: account.uuid, auth_password: account.token}
+whitelist = BeProtected::Whitelist.new(credentials)
+
+# add to whitelist
+response = whitelist.add("some value")
+puts "Response HTTP Status = " + response.status
+if response.success?
+    puts "Value = " + response.value
+    puts "Persisted = " + response.persisted
+else
+    puts "Error #{response.error}"
+end
+
+# get value from whitelist
+response = whitelist.get("some value")
+if response.success?
+    puts "Value = " + response.value
+    puts "Persisted = " + response.persisted
+else
+    puts "Error #{response.error}"
+end
+
+# delete value from whitelist
+response = whitelist.delete("some value")
+if response.success?
+    puts "Value was deleted from whitelist"
+else
+    puts "Error #{response.error}"
+end
+```
+
 ### Verifications
 
 ```ruby

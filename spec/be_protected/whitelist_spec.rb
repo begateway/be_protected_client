@@ -2,22 +2,22 @@ require 'uri'
 require 'spec_helper'
 require 'shared_examples/responses'
 
-describe BeProtected::Blacklist do
+describe BeProtected::Whitelist do
   let(:header) { {'Content-Type' => 'application/json'} }
   let(:credentials) { {auth_login: 'account_uuid', auth_password: 'account_token'} }
   let(:value)  { "any value" }
 
   describe ".add" do
     let(:params) { {value: value} }
-    let(:blacklist) do
+    let(:whitelist) do
       described_class.new(credentials) do |builder|
         builder.adapter :test do |stub|
-          stub.post('/blacklist', params.to_json)  { |env| [status, header, response] }
+          stub.post('/whitelist', params.to_json)  { |env| [status, header, response] }
         end
       end
     end
 
-    subject { blacklist.add(value) }
+    subject { whitelist.add(value) }
 
     context "when response is successful" do
       let(:status)   { 201 }
@@ -35,15 +35,15 @@ describe BeProtected::Blacklist do
 
   describe ".get" do
     let(:params) { {value: value, persisted: true} }
-    let(:blacklist) do
+    let(:whitelist) do
       described_class.new(credentials) do |builder|
         builder.adapter :test do |stub|
-          stub.get(URI.escape("/blacklist/#{value}")) { |env| [status, header, response] }
+          stub.get(URI.escape("/whitelist/#{value}")) { |env| [status, header, response] }
         end
       end
     end
 
-    subject { blacklist.get(value) }
+    subject { whitelist.get(value) }
 
     context "when response is successful" do
       let(:status)   { 200 }
@@ -60,15 +60,15 @@ describe BeProtected::Blacklist do
   end
 
   describe ".delete" do
-    let(:blacklist) do
+    let(:whitelist) do
       described_class.new(credentials) do |builder|
         builder.adapter :test do |stub|
-          stub.delete(URI.escape("/blacklist/#{value}")) { |env| [status, header, response] }
+          stub.delete(URI.escape("/whitelist/#{value}")) { |env| [status, header, response] }
         end
       end
     end
 
-    subject { blacklist.delete(value) }
+    subject { whitelist.delete(value) }
 
     context "when response is successful" do
       let(:status)   { 204 }
