@@ -2,6 +2,7 @@ module BeProtected
   module Response
     class Verification < Base
       autoload :Limit, 'be_protected/response/verification/limit'
+      autoload :Blacklist, 'be_protected/response/verification/blacklist'
 
       def passed?
         verifications.any? && verifications.values.all?(&:passed?)
@@ -20,17 +21,21 @@ module BeProtected
       end
 
       def error_messages
-        "".tap do |errors|
+        [].tap do |errors|
           verifications.keys.each do |key|
             if verifications[key].error?
-              errors << key.capitalize << ": " << verifications[key].error
+              errors << (key.capitalize << ": " << verifications[key].error)
             end
           end
-        end
+        end.join(" ")
       end
 
       def limit
         verifications["limit"]
+      end
+
+      def blacklist
+        verifications["blacklist"]
       end
 
       private

@@ -205,6 +205,11 @@ verification_params = {
     limit: {
         key: 'USD_567',
         value: 585     # transaction amount
+    },
+    blacklist: {
+        ip: '127.0.0.',
+        email: 'john@example.com',
+        card_number: 'stampnumberofcard'
     }
 }
 result = verification.verify(verification_params)
@@ -220,13 +225,26 @@ if result.success?
         puts "Max amount per transaction: "          + result.limit.max     # true or false
     end
 
+    if result.blacklist.passed?
+        puts "Blacklist does not include passed items"
+    else
+        puts "Ip in blacklist: " + result.blacklist.ip                     # true or false
+        puts "Email in blacklist: " + result.blacklist.email               # true or false
+        puts "Card number in blacklist: " + result.blacklist.card_number   # true or false
+    end
+
     if result.error?
         puts "Some errors: " + result.error_messages
     end
 end
 
 puts "Response as hash:"
-result.to_hash # => {limit: {volume: true, count: true, max: true, current_volume: 200, current_count: 15}}
+result.to_hash # => {
+#  limit:
+#    {volume: true, count: true, max: true, current_volume: 200, current_count: 15},
+#  blacklist:
+#    {ip: false, email: true, card_number: false}
+#}
 ```
 
 ## Contributing
