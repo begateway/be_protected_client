@@ -8,7 +8,8 @@ describe BeProtected::Verification do
 
   describe ".verify" do
     let(:params) { {
-        limit: {key: "USD_ID", volume: 585}
+        limit: {key: "USD_ID", volume: 585},
+        blacklist: {ip: "127.0.7.10", email: "john@example.com"}
       } }
     let(:verification) do
       described_class.new(credentials) do |builder|
@@ -23,9 +24,14 @@ describe BeProtected::Verification do
 
     context "when response is successful" do
       let(:status)   { 200 }
-      let(:response) { { limit: {
+      let(:response) { {
+          limit: {
             volume: false, count: false, max: false,
-            current_volume: 10585, current_count: 15 }
+            current_volume: 10585, current_count: 15
+          },
+          blacklist: {
+            ip: false, email: false
+          }
         } }
 
       its(:status) { should == 200 }
@@ -59,19 +65,49 @@ describe BeProtected::Verification do
         end
       end
 
+      context "when blacklist includes passed item" do
+        let(:response) { { blacklist: { ip: true, email: false } } }
+
+        its(:passed?) { should be_false }
+
+        context "attributes" do
+          subject { verification_result.blacklist }
+
+          its(:ip)    { should be_true }
+          its(:email) { should be_false }
+        end
+      end
+
+      context "when blacklist does not include passed item" do
+        let(:response) { { blacklist: { ip: false, email: false } } }
+
+        its(:passed?) { should be_true }
+
+        context "attributes" do
+          subject { verification_result.blacklist }
+
+          its(:ip)    { should be_false }
+          its(:email) { should be_false }
+        end
+      end
+
     end
 
     context "when response has error" do
       let(:status)   { 200 }
-      let(:response) { { limit: {
-            error: "Cannot verify limits." }
+      let(:response) { {
+          limit: { error: "Cannot verify limits." },
+          blacklist: { error: "Cannot verify blacklist." }
         } }
-      let(:hash_response) { {limit: {volume: nil, count: nil, max: nil, current_volume: nil, current_count: nil} } }
+      let(:hash_response) { {
+          limit: {volume: nil, count: nil, max: nil, current_volume: nil, current_count: nil} ,
+          blacklist: {}
+        } }
 
       its(:status)  { should == 200 }
       its(:passed?) { should be_true }
       its(:error?)  { should be_true }
-      its(:error_messages) { should == "Limit: #{response[:limit][:error]}" }
+      its(:error_messages) { should == "Limit: #{response[:limit][:error]} Blacklist: #{response[:blacklist][:error]}" }
       its(:to_hash) { should == hash_response }
     end
 

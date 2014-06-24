@@ -117,6 +117,80 @@ else
 end
 ```
 
+### Managing blacklist
+
+```ruby
+beprotected_credentials = {auth_login: 'login', auth_password: 'password'}
+account = BeProtected::Account.new(beprotected_credentials).create('Account name')
+
+credentials = {auth_login: account.uuid, auth_password: account.token}
+blacklist = BeProtected::Blacklist.new(credentials)
+
+# add to blacklist
+response = blacklist.add("some value")
+puts "Response HTTP Status = " + response.status
+if response.success?
+    puts "Value = " + response.value
+    puts "Persisted = " + response.persisted
+else
+    puts "Error #{response.error}"
+end
+
+# get value from blacklist
+response = blacklist.get("some value")
+if response.success?
+    puts "Value = " + response.value
+    puts "Persisted = " + response.persisted
+else
+    puts "Error #{response.error}"
+end
+
+# delete value from blacklist
+response = blacklist.delete("some value")
+if response.success?
+    puts "Value was deleted from blacklist"
+else
+    puts "Error #{response.error}"
+end
+```
+
+### Managing whitelist
+
+```ruby
+beprotected_credentials = {auth_login: 'login', auth_password: 'password'}
+account = BeProtected::Account.new(beprotected_credentials).create('Account name')
+
+credentials = {auth_login: account.uuid, auth_password: account.token}
+whitelist = BeProtected::Whitelist.new(credentials)
+
+# add to whitelist
+response = whitelist.add("some value")
+puts "Response HTTP Status = " + response.status
+if response.success?
+    puts "Value = " + response.value
+    puts "Persisted = " + response.persisted
+else
+    puts "Error #{response.error}"
+end
+
+# get value from whitelist
+response = whitelist.get("some value")
+if response.success?
+    puts "Value = " + response.value
+    puts "Persisted = " + response.persisted
+else
+    puts "Error #{response.error}"
+end
+
+# delete value from whitelist
+response = whitelist.delete("some value")
+if response.success?
+    puts "Value was deleted from whitelist"
+else
+    puts "Error #{response.error}"
+end
+```
+
 ### Verifications
 
 ```ruby
@@ -131,6 +205,11 @@ verification_params = {
     limit: {
         key: 'USD_567',
         value: 585     # transaction amount
+    },
+    blacklist: {
+        ip: '127.0.0.',
+        email: 'john@example.com',
+        card_number: 'stampnumberofcard'
     }
 }
 result = verification.verify(verification_params)
@@ -146,13 +225,26 @@ if result.success?
         puts "Max amount per transaction: "          + result.limit.max     # true or false
     end
 
+    if result.blacklist.passed?
+        puts "Blacklist does not include passed items"
+    else
+        puts "Ip in blacklist: " + result.blacklist.ip                     # true or false
+        puts "Email in blacklist: " + result.blacklist.email               # true or false
+        puts "Card number in blacklist: " + result.blacklist.card_number   # true or false
+    end
+
     if result.error?
         puts "Some errors: " + result.error_messages
     end
 end
 
 puts "Response as hash:"
-result.to_hash # => {limit: {volume: true, count: true, max: true, current_volume: 200, current_count: 15}}
+result.to_hash # => {
+#  limit:
+#    {volume: true, count: true, max: true, current_volume: 200, current_count: 15},
+#  blacklist:
+#    {ip: false, email: true, card_number: false}
+#}
 ```
 
 ## Contributing
