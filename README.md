@@ -155,6 +155,13 @@ else
     puts "Error #{response.error}"
     puts "Raw response: #{response.raw}"
 end
+
+# you can check is value included in blacklist or not
+case  blacklist.included?("some value")
+when true  then "included"
+when false then "not included"
+else            "can't check (may be service is not available)"
+end
 ```
 
 ### Managing whitelist
