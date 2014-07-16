@@ -82,4 +82,39 @@ describe BeProtected::Blacklist do
     it_behaves_like "unknown response"
   end
 
+  describe ".included?" do
+    let(:params) { {value: value, persisted: true} }
+    let(:blacklist) do
+      described_class.new(credentials) do |builder|
+        builder.adapter :test do |stub|
+          stub.get(URI.escape("/blacklist/#{value}")) { |env| [status, header, response] }
+        end
+      end
+    end
+
+    subject { blacklist.included?(value) }
+
+    context "when value is included in blacklist" do
+      let(:status)   { 200 }
+      let(:response) { params.to_json }
+
+      it { should be_true }
+    end
+
+    context "when value is not included in blacklist" do
+      let(:params)   { { error: 'The resource could not be found.' } }
+      let(:status)   { 404 }
+      let(:response) { params.to_json }
+
+      it { should be_false }
+    end
+
+    context "when response is unknown" do
+      let(:status)   { 503 }
+      let(:response) { 'unknown response' }
+
+      it { should be_nil }
+    end
+  end
+
 end
