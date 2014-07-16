@@ -12,17 +12,24 @@ shared_examples "failed response" do
     its(:status)   { should == 404 }
     its(:error)    { should == "Bad request" }
     its(:success?) { should be_false }
+    its(:raw)      { should == response }
   end
 end
 
 shared_examples "unknown response" do
-  context "when response is unknown" do
-    let(:status)   { 415 }
-    let(:response) { nil }
+  context "when response is not json" do
+    let(:status) { 503 }
+    let(:response) { '<html><head>
+<title>503 Service Temporarily Unavailable</title>
+</head><body>
+<h1>Service Temporarily Unavailable</h1>
+</body>
+</html>' }
 
     its(:failed?)  { should be_true }
-    its(:status)   { should == 415 }
-    its(:error)    { should == "Unknown response. Status is 415." }
+    its(:status)   { should == 503 }
+    its(:error)    { should == "Response is not JSON. Status is 503." }
     its(:success?) { should be_false }
+    its(:raw)      { should == response }
   end
 end
