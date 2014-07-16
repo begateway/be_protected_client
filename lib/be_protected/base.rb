@@ -1,6 +1,7 @@
 require 'json'
 require 'faraday'
 require 'faraday_middleware'
+require "be_protected/middleware"
 
 module BeProtected
   class Base
@@ -27,7 +28,7 @@ module BeProtected
 
           connection.basic_auth(auth_login, auth_password)
           connection.request :json
-          connection.response :json
+          connection.use BeProtected::Middleware::ParseJson
 
           connection
         end

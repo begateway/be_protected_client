@@ -16,7 +16,7 @@ module BeProtected
       end
 
       def error
-        response.body.nil? ? unknown_error : body["error"]
+        body["error"]
       end
 
       def success?
@@ -27,13 +27,13 @@ module BeProtected
         !success?
       end
 
+      def raw
+        body['raw_response'] || body.to_json
+      end
+
       protected
       def body
         @body ||= response.body.is_a?(Hash) ? response.body : {}
-      end
-
-      def unknown_error
-        "Unknown response. Status is #{status}."
       end
 
     end

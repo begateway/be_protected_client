@@ -134,6 +134,7 @@ if response.success?
     puts "Persisted = " + response.persisted
 else
     puts "Error #{response.error}"
+    puts "Raw response: #{response.raw}"
 end
 
 # get value from blacklist
@@ -143,6 +144,7 @@ if response.success?
     puts "Persisted = " + response.persisted
 else
     puts "Error #{response.error}"
+    puts "Raw response: #{response.raw}"
 end
 
 # delete value from blacklist
@@ -151,6 +153,7 @@ if response.success?
     puts "Value was deleted from blacklist"
 else
     puts "Error #{response.error}"
+    puts "Raw response: #{response.raw}"
 end
 ```
 

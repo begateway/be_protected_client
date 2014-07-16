@@ -60,7 +60,7 @@ describe BeProtected::Base do
 
       allow(connection).to receive(:basic_auth)
       allow(connection).to receive(:request).with(:json)
-      allow(connection).to receive(:response).with(:json)
+      allow(connection).to receive(:use).with(BeProtected::Middleware::ParseJson)
       expect(builder).to receive(:adapter).with(:test)
 
       subject.connection
