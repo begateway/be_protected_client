@@ -160,7 +160,7 @@ end
 case  blacklist.included?("some value")
 when true  then "included"
 when false then "not included"
-else            "can't check (may be servise is not available)"
+else            "can't check (may be service is not available)"
 end
 ```
 
