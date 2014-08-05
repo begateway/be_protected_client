@@ -1,5 +1,6 @@
 require 'spec_helper'
 require 'shared_examples/responses'
+require 'shared_examples/connection_failed'
 
 describe BeProtected::Limit do
   let(:header) { {'Content-Type' => 'application/json'} }
@@ -32,6 +33,7 @@ describe BeProtected::Limit do
 
     it_behaves_like "failed response"
     it_behaves_like "unknown response"
+    it_behaves_like "connection failed"
   end
 
   describe ".update" do
@@ -61,6 +63,7 @@ describe BeProtected::Limit do
 
     it_behaves_like "failed response"
     it_behaves_like "unknown response"
+    it_behaves_like "connection failed"
   end
 
   describe ".get" do
@@ -90,6 +93,7 @@ describe BeProtected::Limit do
 
     it_behaves_like "failed response"
     it_behaves_like "unknown response"
+    it_behaves_like "connection failed"
   end
 
   describe ".decrease" do
@@ -116,6 +120,7 @@ describe BeProtected::Limit do
 
     it_behaves_like "failed response"
     it_behaves_like "unknown response"
+    it_behaves_like "connection failed"
   end
 
 end
