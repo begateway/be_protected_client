@@ -1,6 +1,7 @@
 require 'spec_helper'
 require 'shared_examples/responses'
 require 'shared_examples/verifications'
+require 'shared_examples/connection_failed'
 
 describe BeProtected::Verification do
   let(:header) { {'Content-Type' => 'application/json'} }
@@ -113,6 +114,7 @@ describe BeProtected::Verification do
 
     it_behaves_like "failed response"
     it_behaves_like "unknown response"
+    it_behaves_like "connection failed"
   end
 
 end
