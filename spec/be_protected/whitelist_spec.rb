@@ -26,7 +26,7 @@ describe BeProtected::Whitelist do
 
       its(:status) { should == 201 }
       its(:value)  { should == value }
-      its(:persisted) { should be_true }
+      its(:persisted) { should be true }
       it_behaves_like "successful response"
     end
 
@@ -53,7 +53,7 @@ describe BeProtected::Whitelist do
 
       its(:status) { should == 200 }
       its(:value)  { should == value }
-      its(:persisted) { should be_true }
+      its(:persisted) { should be true }
       it_behaves_like "successful response"
     end
 

@@ -1,6 +1,6 @@
 shared_examples "successful response" do
-  its(:success?) { should be_true }
-  its(:failed?)  { should be_false }
+  its(:success?) { should be true }
+  its(:failed?)  { should be false }
 end
 
 shared_examples "failed response" do
@@ -8,10 +8,10 @@ shared_examples "failed response" do
     let(:status)   { 404 }
     let(:response) { '{"error":"Bad request"}' }
 
-    its(:failed?)  { should be_true }
+    its(:failed?)  { should be true }
     its(:status)   { should == 404 }
     its(:error)    { should == "Bad request" }
-    its(:success?) { should be_false }
+    its(:success?) { should be false }
     its(:raw)      { should == response }
   end
 end
@@ -26,10 +26,10 @@ shared_examples "unknown response" do
 </body>
 </html>' }
 
-    its(:failed?)  { should be_true }
+    its(:failed?)  { should be true }
     its(:status)   { should == 503 }
     its(:error)    { should == "Response is not JSON. Status is 503." }
-    its(:success?) { should be_false }
+    its(:success?) { should be false }
     its(:raw)      { should == response }
   end
 end
