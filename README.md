@@ -201,6 +201,49 @@ else
 end
 ```
 
+### Managing rules
+
+```ruby
+credentials = { auth_login: 'login', auth_password: 'password' }
+rule = BeProtected::Rule.new(credentials)
+
+# create rule
+For creating a rule, you should pass 3 params:
+action - an action. Accpeted values: 'reject' and 'review'
+condition - rule condition
+alias - rule alias
+
+response = rule.create("review", "Unique CardHolder count more than 5 in 36 hours", "rule_1")
+puts "Response HTTP Status = " + response.status
+if response.success?
+    puts "Uuid = " + response.uuid
+    puts "Action = " + response.action
+    puts "Condition = " + response.condition
+    puts "Alias = " + response.alias
+else
+    puts "Error #{response.error}"
+end
+
+# update rule
+reject_rule = rule.update(response.uuid, action: "reject")
+if reject_rule.failed?
+    puts "Can't update rule: " + reject_rule.error
+else
+    puts "Action was successfully updated to " + reject_rule.action
+end
+
+# get rule
+response = rule.get(john.uuid)
+if response.success?
+    puts "Uuid = " + response.uuid
+    puts "Action = " + response.action
+    puts "Condition = " + response.condition
+    puts "Alias = " + response.alias
+else
+    puts "Error #{response.error}"
+end
+```
+
 ### Verifications
 
 ```ruby
