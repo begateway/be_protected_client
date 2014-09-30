@@ -7,6 +7,7 @@ require "be_protected/whitelist"
 require "be_protected/verification"
 require "be_protected/configuration"
 require "be_protected/response"
+require "be_protected/rule"
 
 module BeProtected
 end
