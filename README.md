@@ -209,7 +209,7 @@ rule = BeProtected::Rule.new(credentials)
 
 # create rule
 For creating a rule, you should pass 3 params:
-action - an action. Accepted values: 'reject' and 'review'
+action - rule action. Accepted values: 'reject' and 'review'
 condition - rule condition
 alias - rule alias
 
