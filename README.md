@@ -209,7 +209,7 @@ rule = BeProtected::Rule.new(credentials)
 
 # create rule
 For creating a rule, you should pass 3 params:
-action - an action. Accpeted values: 'reject' and 'review'
+action - an action. Accepted values: 'reject' and 'review'
 condition - rule condition
 alias - rule alias
 
@@ -233,7 +233,7 @@ else
 end
 
 # get rule
-response = rule.get(john.uuid)
+response = rule.get(reject_rule.uuid)
 if response.success?
     puts "Uuid = " + response.uuid
     puts "Action = " + response.action
