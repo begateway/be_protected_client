@@ -4,9 +4,9 @@ shared_examples "connection failed" do
     let(:message)  { "Connection was failed." }
     let(:response) { raise  Faraday::Error, message }
 
-    its(:failed?)  { should be_true }
+    its(:failed?)  { should be true }
     its(:status)   { should == 500 }
     its(:error)    { should == message }
-    its(:success?) { should be_false }
+    its(:success?) { should be false }
   end
 end

@@ -36,7 +36,7 @@ describe BeProtected::Verification do
         } }
 
       its(:status) { should == 200 }
-      its(:error?) { should be_false }
+      its(:error?) { should be false }
       its(:to_hash) { should == response }
 
       it_behaves_like "successful response"
@@ -47,7 +47,7 @@ describe BeProtected::Verification do
             current_volume: 10585, current_count: 15 }
         } }
 
-        its(:passed?) { should be_false }
+        its(:passed?) { should be false }
 
         context "attributes" do
           subject { verification_result.limit }
@@ -57,7 +57,7 @@ describe BeProtected::Verification do
       end
 
       context "when limit wasn't exceeded" do
-        its(:passed?) { should be_true }
+        its(:passed?) { should be true }
 
         context "attributes" do
           subject { verification_result.limit }
@@ -69,26 +69,26 @@ describe BeProtected::Verification do
       context "when blacklist includes passed item" do
         let(:response) { { blacklist: { ip: true, email: false } } }
 
-        its(:passed?) { should be_false }
+        its(:passed?) { should be false }
 
         context "attributes" do
           subject { verification_result.blacklist }
 
-          its(:ip)    { should be_true }
-          its(:email) { should be_false }
+          its(:ip)    { should be true }
+          its(:email) { should be false }
         end
       end
 
       context "when blacklist does not include passed item" do
         let(:response) { { blacklist: { ip: false, email: false } } }
 
-        its(:passed?) { should be_true }
+        its(:passed?) { should be true }
 
         context "attributes" do
           subject { verification_result.blacklist }
 
-          its(:ip)    { should be_false }
-          its(:email) { should be_false }
+          its(:ip)    { should be false }
+          its(:email) { should be false }
         end
       end
 
@@ -106,8 +106,8 @@ describe BeProtected::Verification do
         } }
 
       its(:status)  { should == 200 }
-      its(:passed?) { should be_true }
-      its(:error?)  { should be_true }
+      its(:passed?) { should be true }
+      its(:error?)  { should be true }
       its(:error_messages) { should == "Limit: #{response[:limit][:error]} Blacklist: #{response[:blacklist][:error]}" }
       its(:to_hash) { should == hash_response }
     end

@@ -26,7 +26,7 @@ describe BeProtected::Blacklist do
 
       its(:status) { should == 201 }
       its(:value)  { should == value }
-      its(:persisted) { should be_true }
+      its(:persisted) { should be true }
       it_behaves_like "successful response"
     end
 
@@ -53,7 +53,7 @@ describe BeProtected::Blacklist do
 
       its(:status) { should == 200 }
       its(:value)  { should == value }
-      its(:persisted) { should be_true }
+      its(:persisted) { should be true }
       it_behaves_like "successful response"
     end
 
@@ -102,7 +102,7 @@ describe BeProtected::Blacklist do
       let(:status)   { 200 }
       let(:response) { params.to_json }
 
-      it { should be_true }
+      it { should be true }
     end
 
     context "when value is not included in blacklist" do
@@ -110,7 +110,7 @@ describe BeProtected::Blacklist do
       let(:status)   { 404 }
       let(:response) { params.to_json }
 
-      it { should be_false }
+      it { should be false }
     end
 
     context "when response is unknown" do
