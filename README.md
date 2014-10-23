@@ -35,18 +35,19 @@ credentials = {auth_login: 'login', auth_password: 'password'}
 account = BeProtected::Account.new(credentials)
 
 # create account
-response = account.create("Jane")
+response = account.create(name: "Jane", parent_uuid: '123abc')
 puts "Response HTTP Status = " + response.status
 if response.success?
     puts "Uuid = " + response.uuid
     puts "Name = " + response.name
     puts "Token = " + response.token
+    puts "ParentUuid = " + response.parent_uuid
 else
     puts "Error #{response.error}"
 end
 
 # update account
-john = account.update(response.uuid, name: "John")
+john = account.update(response.uuid, name: "John", parent_uuid: '')
 if john.failed?
     puts "Can't update account: " + john.error
 else
@@ -58,6 +59,7 @@ response = account.get(john.uuid)
 if response.success?
     puts "Name = " + response.name
     puts "Token = " + response.token
+    puts "ParentUuid = " + response.parent_uuid
 else
     puts "Error #{response.error}"
 end
