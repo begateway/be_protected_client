@@ -272,6 +272,17 @@ else
     puts "Error #{response.error}"
     puts "Raw response: #{response.raw}"
 end
+
+# add data for rules
+response = rule.add_data(ip: "211.10.9.8", email: "john@example.com", amount: 100, currency: "USD",
+    card_number: "4200000000000000", card_holder: "Jane Doe", status: "failed",
+    type: "Payment", created_at: "2014-09-09 06:21:24")
+if response.success?
+    puts response.message
+else
+    puts "Error #{response.error}"
+    puts "Raw response: #{response.raw}"
+end
 ```
 
 ### Verifications

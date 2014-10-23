@@ -22,6 +22,10 @@ module BeProtected
       Response::Rule.new request(:delete, resource_path(uuid))
     end
 
+    def add_data(params)
+      Response::Rule.new request(:post, resource_path + '/data', params)
+    end
+
     private
     def resource_path(uuid = nil)
       "/rules".tap do |path|

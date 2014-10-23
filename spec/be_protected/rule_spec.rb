@@ -198,4 +198,35 @@ describe BeProtected::Rule do
     it_behaves_like "connection failed"
   end
 
+  describe ".add_data" do
+    let(:params) { {
+        ip: "211.10.9.8", email: "john@example.com", amount: 100, currency: "USD",
+        card_number: "4200000000000000", card_holder: "Jane Doe", status: "failed",
+        type: "Payment", created_at: "2014-09-09 06:21:24"
+      } }
+
+    let(:rule) do
+      described_class.new do |builder|
+        builder.adapter :test do |stub|
+          stub.post('/rules/data', params.to_json)  { |env| [status, header, response] }
+        end
+      end
+    end
+
+    subject { rule.add_data(params) }
+
+    context "when response is successful" do
+      let(:status)   { 200 }
+      let(:response) { {message: "Data was added."}.to_json }
+
+      its(:status)   { should == 200 }
+      its(:message)  { should == "Data was added." }
+      it_behaves_like "successful response"
+    end
+
+    it_behaves_like "failed response"
+    it_behaves_like "unknown response"
+    it_behaves_like "connection failed"
+  end
+
 end
