@@ -1,11 +1,11 @@
 module BeProtected
   module Response
-    class Rules < BaseList
+    class Sets < BaseList
 
       private
 
       def item_class_name
-        Response::Rule
+        Response::Set
       end
 
     end

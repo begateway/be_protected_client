@@ -210,12 +210,7 @@ credentials = { auth_login: 'login', auth_password: 'password' }
 rule = BeProtected::Rule.new(credentials)
 
 # create rule
-For creating a rule, you should pass 3 params:
-action - rule action. Accepted values: 'reject' and 'review'
-condition - rule condition
-alias - rule alias
-
-parms = {action: "reject", condition: "Unique CardHolder count more than 5 in 36 hours",
+params = {action: "reject", condition: "Unique CardHolder count more than 5 in 36 hours",
         alias: "rule_1", active: true}
 response = rule.create(params)
 puts "Response HTTP Status = " + response.status
@@ -279,6 +274,68 @@ response = rule.add_data(ip: "211.10.9.8", email: "john@example.com", amount: 10
     type: "Payment", created_at: "2014-09-09 06:21:24")
 if response.success?
     puts response.message
+else
+    puts "Error #{response.error}"
+    puts "Raw response: #{response.raw}"
+end
+```
+
+### Managing sets
+
+```ruby
+credentials = { auth_login: 'login', auth_password: 'password' }
+set = BeProtected::Set.new(credentials)
+
+# create set
+params = {name:"AllowedTypes", value: ["Payment", "Refund"]}
+response = set.create(params)
+puts "Response HTTP Status = " + response.status
+if response.success?
+    puts "Uuid = " + response.uuid
+    puts "AccountUuid = " + response.account_uuid
+    puts "Name = " + response.name
+    puts "Value = " + response.value
+else
+    puts "Error #{response.error}"
+end
+
+# update set
+allowed_types = set.update(response.uuid, value: ["Authorization", "Capture", "Void"])
+if allowed_types.failed?
+    puts "Can't update set: " + allowed_types.error
+else
+    puts "Allowed types was update to" + allowed_types.value
+end
+
+# get set
+response = set.get(allowed_types.uuid)
+if response.success?
+    puts "Uuid = " + response.uuid
+    puts "AccountUuid = " + response.account_uuid
+    puts "Name = " + response.name
+    puts "Value = " + response.value
+else
+    puts "Error #{response.error}"
+end
+
+# get all sets
+sets = set.get
+if response.success?
+    sets.each_with_index do |s, index|
+        puts "Set ##{index}"
+        puts "Uuid = " + s.uuid
+        puts "AccountUuid = " + s.account_uuid
+        puts "Name = " + s.name
+        puts "Value = " + s.value
+    end
+else
+    puts "Error #{response.error}"
+end
+
+# delete set
+response = set.delete(allowed_types.uuid)
+if response.success?
+    puts "Set was deleted"
 else
     puts "Error #{response.error}"
     puts "Raw response: #{response.raw}"
