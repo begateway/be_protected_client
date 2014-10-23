@@ -215,19 +215,22 @@ action - rule action. Accepted values: 'reject' and 'review'
 condition - rule condition
 alias - rule alias
 
-response = rule.create("review", "Unique CardHolder count more than 5 in 36 hours", "rule_1")
+parms = {action: "reject", condition: "Unique CardHolder count more than 5 in 36 hours",
+        alias: "rule_1", active: true}
+response = rule.create(params)
 puts "Response HTTP Status = " + response.status
 if response.success?
     puts "Uuid = " + response.uuid
     puts "Action = " + response.action
     puts "Condition = " + response.condition
     puts "Alias = " + response.alias
+    puts "Active = " + response.active.to_s
 else
     puts "Error #{response.error}"
 end
 
 # update rule
-reject_rule = rule.update(response.uuid, action: "reject")
+reject_rule = rule.update(response.uuid, action: "reject", active: false)
 if reject_rule.failed?
     puts "Can't update rule: " + reject_rule.error
 else
@@ -241,8 +244,33 @@ if response.success?
     puts "Action = " + response.action
     puts "Condition = " + response.condition
     puts "Alias = " + response.alias
+    puts "Active = " + response.active.to_s
 else
     puts "Error #{response.error}"
+end
+
+# get all rules
+rules = rule.get
+if response.success?
+    rules.each_with_index do |r, index|
+        puts "Rule ##{index}"
+        puts "Uuid = " + r.uuid
+        puts "Action = " + r.action
+        puts "Condition = " + r.condition
+        puts "Alias = " + r.alias
+        puts "Active = " + r.active.to_s
+    end
+else
+    puts "Error #{response.error}"
+end
+
+# delete rule
+response = rule.delete(reject_rule.uuid)
+if response.success?
+    puts "Rule was deleted"
+else
+    puts "Error #{response.error}"
+    puts "Raw response: #{response.raw}"
 end
 ```
 

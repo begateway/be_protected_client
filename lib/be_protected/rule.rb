@@ -1,22 +1,25 @@
 module BeProtected
   class Rule < Base
 
-    def create(action, condition, name_alias)
-      Response::Rule.new request(:post, resource_path,
-        {
-          action: action,
-          condition: condition,
-          alias: name_alias
-        }
-      )
+    def create(params)
+      Response::Rule.new request(:post, resource_path, params)
     end
 
-    def get(uuid)
-      Response::Rule.new request(:get, resource_path(uuid))
+    def get(uuid = nil)
+      response = request(:get, resource_path(uuid))
+      if uuid
+        Response::Rule.new response
+      else
+        Response::Rules.new response
+      end
     end
 
     def update(uuid, params)
       Response::Rule.new request(:post, resource_path(uuid), params)
+    end
+
+    def delete(uuid)
+      Response::Rule.new request(:delete, resource_path(uuid))
     end
 
     private
