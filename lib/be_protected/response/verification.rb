@@ -2,6 +2,7 @@ module BeProtected
   module Response
     class Verification < Base
       autoload :Limit, 'be_protected/response/verification/limit'
+      autoload :Rules, 'be_protected/response/verification/rules'
       autoload :Blacklist, 'be_protected/response/verification/blacklist'
 
       def passed?
@@ -38,6 +39,10 @@ module BeProtected
 
       def blacklist
         verifications["blacklist"]
+      end
+
+      def rules
+        verifications["rules"]
       end
 
       private

@@ -361,6 +361,10 @@ verification_params = {
         ip: '127.0.0.',
         email: 'john@example.com',
         card_number: 'stampnumberofcard'
+    },
+    rules: {
+        ip: '127.0.0.8', card_number: '4200000000000000',
+        amount: 250, currency: 'USD'
     }
 }
 result = verification.verify(verification_params)
@@ -384,6 +388,12 @@ if result.success?
         puts "Card number in blacklist: " + result.blacklist.card_number   # true or false
     end
 
+    if result.rules.passed?
+        puts "All rules was passed"
+    else
+        puts "Some rules was rejected: #{result.rules.to_hash}"
+    end
+
     if result.error?
         puts "Some errors: " + result.error_messages
     end
@@ -394,7 +404,14 @@ result.to_hash # => {
 #  limit:
 #    {volume: true, count: true, max: true, current_volume: 200, current_count: 15},
 #  blacklist:
-#    {ip: false, email: true, card_number: false}
+#    {ip: false, email: true, card_number: false},
+#  rules:
+#    {'parent account' => {
+#        'alias 1' => {'Transaction amount more than 100 EUR' => 'review'},
+#        'alias 2' => {'Transaction amount more than 400 EUR' => 'reject'}},
+#     'child account'  => {'alias 5' => {'Transaction amount more than 90 USD'  => 'skipped'}}
+#    }
+#
 #}
 ```
 

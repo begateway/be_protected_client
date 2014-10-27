@@ -10,7 +10,8 @@ describe BeProtected::Verification do
   describe ".verify" do
     let(:params) { {
         limit: {key: "USD_ID", volume: 585},
-        blacklist: {ip: "127.0.7.10", email: "john@example.com"}
+        blacklist: {ip: "127.0.7.10", email: "john@example.com"},
+        rules: {ip: "127.0.0.8", card_number: "4200000000000000"}
       } }
     let(:verification) do
       described_class.new(credentials) do |builder|
@@ -32,6 +33,10 @@ describe BeProtected::Verification do
           },
           blacklist: {
             ip: false, email: false
+          },
+          rules: {
+            'parent account' => {'alias 1' => {'Transaction amount more than 100 EUR' => 'skipped'}},
+            'child account'  => {'alias 5' => {'Transaction amount more than 90 USD'  => 'passed'}}
           }
         } }
 
@@ -89,6 +94,31 @@ describe BeProtected::Verification do
 
           its(:ip)    { should be false }
           its(:email) { should be false }
+        end
+      end
+
+      context "when at least one rule was 'reject'" do
+        let(:response) { { rules: {
+              'parent account' => {
+                'alias 1' => {'Transaction amount more than 100 EUR' => 'review'},
+                'alias 2' => {'Transaction amount more than 400 EUR' => 'reject'}},
+              'child account'  => {'alias 5' => {'Transaction amount more than 90 USD'  => 'skipped'}}
+            } } }
+
+        its(:passed?) { should be false }
+
+        context "attributes" do
+          subject { verification_result.rules }
+          its(:to_hash) { should == response[:rules] }
+        end
+      end
+
+      context "when all rules was not 'reject'" do
+        its(:passed?) { should be true }
+
+        context "attributes" do
+          subject { verification_result.rules }
+          its(:to_hash) { should == response[:rules] }
         end
       end
 
