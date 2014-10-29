@@ -1,8 +1,8 @@
 module BeProtected
   class Account < Base
 
-    def create(name)
-      Response::Account.new request(:post, resource_path, {name: name})
+    def create(params)
+      Response::Account.new request(:post, resource_path, params)
     end
 
     def get(uuid)

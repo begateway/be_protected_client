@@ -35,18 +35,19 @@ credentials = {auth_login: 'login', auth_password: 'password'}
 account = BeProtected::Account.new(credentials)
 
 # create account
-response = account.create("Jane")
+response = account.create(name: "Jane", parent_uuid: '123abc')
 puts "Response HTTP Status = " + response.status
 if response.success?
     puts "Uuid = " + response.uuid
     puts "Name = " + response.name
     puts "Token = " + response.token
+    puts "ParentUuid = " + response.parent_uuid
 else
     puts "Error #{response.error}"
 end
 
 # update account
-john = account.update(response.uuid, name: "John")
+john = account.update(response.uuid, name: "John", parent_uuid: '')
 if john.failed?
     puts "Can't update account: " + john.error
 else
@@ -58,6 +59,7 @@ response = account.get(john.uuid)
 if response.success?
     puts "Name = " + response.name
     puts "Token = " + response.token
+    puts "ParentUuid = " + response.parent_uuid
 else
     puts "Error #{response.error}"
 end
@@ -208,24 +210,22 @@ credentials = { auth_login: 'login', auth_password: 'password' }
 rule = BeProtected::Rule.new(credentials)
 
 # create rule
-For creating a rule, you should pass 3 params:
-action - rule action. Accepted values: 'reject' and 'review'
-condition - rule condition
-alias - rule alias
-
-response = rule.create("review", "Unique CardHolder count more than 5 in 36 hours", "rule_1")
+params = {action: "reject", condition: "Unique CardHolder count more than 5 in 36 hours",
+        alias: "rule_1", active: true}
+response = rule.create(params)
 puts "Response HTTP Status = " + response.status
 if response.success?
     puts "Uuid = " + response.uuid
     puts "Action = " + response.action
     puts "Condition = " + response.condition
     puts "Alias = " + response.alias
+    puts "Active = " + response.active.to_s
 else
     puts "Error #{response.error}"
 end
 
 # update rule
-reject_rule = rule.update(response.uuid, action: "reject")
+reject_rule = rule.update(response.uuid, action: "reject", active: false)
 if reject_rule.failed?
     puts "Can't update rule: " + reject_rule.error
 else
@@ -239,8 +239,106 @@ if response.success?
     puts "Action = " + response.action
     puts "Condition = " + response.condition
     puts "Alias = " + response.alias
+    puts "Active = " + response.active.to_s
 else
     puts "Error #{response.error}"
+end
+
+# get all rules
+rules = rule.get
+if response.success?
+    rules.each_with_index do |r, index|
+        puts "Rule ##{index}"
+        puts "Uuid = " + r.uuid
+        puts "Action = " + r.action
+        puts "Condition = " + r.condition
+        puts "Alias = " + r.alias
+        puts "Active = " + r.active.to_s
+    end
+else
+    puts "Error #{response.error}"
+end
+
+# delete rule
+response = rule.delete(reject_rule.uuid)
+if response.success?
+    puts "Rule was deleted"
+else
+    puts "Error #{response.error}"
+    puts "Raw response: #{response.raw}"
+end
+
+# add data for rules
+response = rule.add_data(ip: "211.10.9.8", email: "john@example.com", amount: 100, currency: "USD",
+    card_number: "4200000000000000", card_holder: "Jane Doe", status: "failed",
+    type: "Payment", created_at: "2014-09-09 06:21:24")
+if response.success?
+    puts response.message
+else
+    puts "Error #{response.error}"
+    puts "Raw response: #{response.raw}"
+end
+```
+
+### Managing sets
+
+```ruby
+credentials = { auth_login: 'login', auth_password: 'password' }
+set = BeProtected::Set.new(credentials)
+
+# create set
+params = {name:"AllowedTypes", value: ["Payment", "Refund"]}
+response = set.create(params)
+puts "Response HTTP Status = " + response.status
+if response.success?
+    puts "Uuid = " + response.uuid
+    puts "AccountUuid = " + response.account_uuid
+    puts "Name = " + response.name
+    puts "Value = " + response.value
+else
+    puts "Error #{response.error}"
+end
+
+# update set
+allowed_types = set.update(response.uuid, value: ["Authorization", "Capture", "Void"])
+if allowed_types.failed?
+    puts "Can't update set: " + allowed_types.error
+else
+    puts "Allowed types was update to" + allowed_types.value
+end
+
+# get set
+response = set.get(allowed_types.uuid)
+if response.success?
+    puts "Uuid = " + response.uuid
+    puts "AccountUuid = " + response.account_uuid
+    puts "Name = " + response.name
+    puts "Value = " + response.value
+else
+    puts "Error #{response.error}"
+end
+
+# get all sets
+sets = set.get
+if response.success?
+    sets.each_with_index do |s, index|
+        puts "Set ##{index}"
+        puts "Uuid = " + s.uuid
+        puts "AccountUuid = " + s.account_uuid
+        puts "Name = " + s.name
+        puts "Value = " + s.value
+    end
+else
+    puts "Error #{response.error}"
+end
+
+# delete set
+response = set.delete(allowed_types.uuid)
+if response.success?
+    puts "Set was deleted"
+else
+    puts "Error #{response.error}"
+    puts "Raw response: #{response.raw}"
 end
 ```
 
@@ -263,6 +361,10 @@ verification_params = {
         ip: '127.0.0.',
         email: 'john@example.com',
         card_number: 'stampnumberofcard'
+    },
+    rules: {
+        ip: '127.0.0.8', card_number: '4200000000000000',
+        amount: 250, currency: 'USD'
     }
 }
 result = verification.verify(verification_params)
@@ -286,6 +388,12 @@ if result.success?
         puts "Card number in blacklist: " + result.blacklist.card_number   # true or false
     end
 
+    if result.rules.passed?
+        puts "All rules was passed"
+    else
+        puts "Some rules was rejected: #{result.rules.to_hash}"
+    end
+
     if result.error?
         puts "Some errors: " + result.error_messages
     end
@@ -296,7 +404,14 @@ result.to_hash # => {
 #  limit:
 #    {volume: true, count: true, max: true, current_volume: 200, current_count: 15},
 #  blacklist:
-#    {ip: false, email: true, card_number: false}
+#    {ip: false, email: true, card_number: false},
+#  rules:
+#    {'parent account' => {
+#        'alias 1' => {'Transaction amount more than 100 EUR' => 'review'},
+#        'alias 2' => {'Transaction amount more than 400 EUR' => 'reject'}},
+#     'child account'  => {'alias 5' => {'Transaction amount more than 90 USD'  => 'skipped'}}
+#    }
+#
 #}
 ```
 

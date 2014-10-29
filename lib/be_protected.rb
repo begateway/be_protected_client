@@ -8,6 +8,7 @@ require "be_protected/verification"
 require "be_protected/configuration"
 require "be_protected/response"
 require "be_protected/rule"
+require "be_protected/set"
 
 module BeProtected
 end
