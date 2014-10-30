@@ -77,9 +77,13 @@ describe BeProtected::Set do
     context "when response is successful" do
       let(:status)   { 200 }
       let(:response) do
-        [{uuid: "100cebebc", account_uuid: "c9510127", name: "AllowedTypes", value: ["Payment"]},
-         {uuid: "200cebebc", account_uuid: "a1000127", name: "AllowedCountries", value: ["UK"]}
-        ]
+        {
+          sets:
+            [
+              {uuid: "100cebebc", account_uuid: "c9510127", name: "AllowedTypes", value: ["Payment"]},
+              {uuid: "200cebebc", account_uuid: "a1000127", name: "AllowedCountries", value: ["UK"]}
+            ]          
+        }
       end
 
       its(:status)   { should == 200 }

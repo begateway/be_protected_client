@@ -107,13 +107,15 @@ describe BeProtected::Rule do
     context "when response is successful" do
       let(:status)   { 200 }
       let(:response) do
-        [{uuid: "100cebebc", account_uuid: "c9510127", action: "review",
-           condition: "Unique CardHolder count more than 5 in 36 hours",
-           alias: "rule_2", active: true},
-         {uuid: "200cebebc", account_uuid: "a1000127", action: "reject",
-           condition: "Unique CardHolder count more than 15 in 6 hours",
-           alias: "rule_25", active: false}
-        ]
+        { rules:
+          [{uuid: "100cebebc", account_uuid: "c9510127", action: "review",
+             condition: "Unique CardHolder count more than 5 in 36 hours",
+             alias: "rule_2", active: true},
+           {uuid: "200cebebc", account_uuid: "a1000127", action: "reject",
+             condition: "Unique CardHolder count more than 15 in 6 hours",
+             alias: "rule_25", active: false}
+          ]
+        }
       end
 
       its(:status)   { should == 200 }

@@ -3,7 +3,6 @@ require "be_protected/response/attributes"
 module BeProtected
   module Response
     class BaseList < Base
-
       def initialize(*args)
         @items = []
         super
@@ -21,8 +20,8 @@ module BeProtected
       private
 
       def item_from_response(index)
-        if response.body.is_a?(Array)
-          response.body[index]
+        if response.body[root_key].is_a?(Array)
+          response.body[root_key][index]
         else
           {}
         end
@@ -30,6 +29,10 @@ module BeProtected
 
       def item_class_name
         raise 'Unknown item class name'
+      end
+
+      def root_key
+        raise 'Unknown root key'
       end
 
     end
