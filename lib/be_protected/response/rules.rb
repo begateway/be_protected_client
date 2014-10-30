@@ -8,6 +8,10 @@ module BeProtected
         Response::Rule
       end
 
+      def root_key
+        'rules'
+      end
+
     end
   end
 end

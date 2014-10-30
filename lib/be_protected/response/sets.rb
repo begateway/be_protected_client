@@ -8,6 +8,10 @@ module BeProtected
         Response::Set
       end
 
+      def root_key
+        'sets'
+      end
+
     end
   end
 end
