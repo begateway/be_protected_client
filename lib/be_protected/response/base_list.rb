@@ -6,17 +6,19 @@ module BeProtected
 
       include Enumerable
 
+      attr_reader :items
+
       def initialize(*args)
         super
         set_items
       end
 
       def each(&block)
-        @items.each(&block)
+        items.each(&block)
       end
 
       def [](index)
-        @items[index]
+        items[index]
       end
 
       private

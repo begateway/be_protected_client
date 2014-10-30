@@ -251,6 +251,9 @@ if response.success?
     all_aliases = rules.map {|r| r.alias }
     puts "All aliases: #{all_aliases]"
 
+    # get all items
+    items = rules.items
+
     rules.each_with_index do |r, index|
         puts "Rule ##{index}"
         puts "Uuid = " + r.uuid
