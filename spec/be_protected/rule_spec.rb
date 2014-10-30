@@ -121,7 +121,7 @@ describe BeProtected::Rule do
       its(:status)   { should == 200 }
 
       it "returns Response::Rule list" do
-        expect(subject[0].uuid).to eq("100cebebc")
+        expect(subject.first.uuid).to eq("100cebebc")
         expect(subject[0].action).to eq("review")
         expect(subject[0].alias).to eq("rule_2")
         expect(subject[1].account_uuid).to eq("a1000127")

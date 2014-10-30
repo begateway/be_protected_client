@@ -3,27 +3,31 @@ require "be_protected/response/attributes"
 module BeProtected
   module Response
     class BaseList < Base
+
+      include Enumerable
+
       def initialize(*args)
-        @items = []
         super
+        set_items
+      end
+
+      def each(&block)
+        @items.each(&block)
       end
 
       def [](index)
-        @items[index] ||=
-          begin
-            value = item_from_response(index)
-            struct = OpenStruct.new(status: status, body: value)
-            item_class_name.new(struct)
-          end
+        @items[index]
       end
 
       private
 
-      def item_from_response(index)
+      def set_items
+        @items = []
         if response.body[root_key].is_a?(Array)
-          response.body[root_key][index]
-        else
-          {}
+          response.body[root_key].each do |item|
+            struct = OpenStruct.new(status: status, body: item)
+            @items << item_class_name.new(struct)
+          end
         end
       end
 
