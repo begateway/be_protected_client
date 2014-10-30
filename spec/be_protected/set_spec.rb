@@ -82,15 +82,15 @@ describe BeProtected::Set do
             [
               {uuid: "100cebebc", account_uuid: "c9510127", name: "AllowedTypes", value: ["Payment"]},
               {uuid: "200cebebc", account_uuid: "a1000127", name: "AllowedCountries", value: ["UK"]}
-            ]          
+            ]
         }
       end
 
       its(:status)   { should == 200 }
 
       it "returns Response::Set list" do
-        expect(subject[0].uuid).to eq("100cebebc")
-        expect(subject[0].name).to eq("AllowedTypes")
+        expect(subject.first.uuid).to eq("100cebebc")
+        expect(subject.first.name).to eq("AllowedTypes")
         expect(subject[0].value).to eq(["Payment"])
         expect(subject[1].account_uuid).to eq("a1000127")
         expect(subject[1].name).to eq("AllowedCountries")

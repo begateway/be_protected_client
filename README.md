@@ -247,6 +247,13 @@ end
 # get all rules
 rules = rule.get
 if response.success?
+    # rules includes Enumerable and we can use each, map & etc.
+    all_aliases = rules.map {|r| r.alias }
+    puts "All aliases: #{all_aliases]"
+
+    # get all items
+    items = rules.items
+
     rules.each_with_index do |r, index|
         puts "Rule ##{index}"
         puts "Uuid = " + r.uuid
