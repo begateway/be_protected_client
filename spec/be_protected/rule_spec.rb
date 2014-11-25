@@ -211,9 +211,12 @@ describe BeProtected::Rule do
 
   describe ".add_data" do
     let(:params) { {
-        ip: "211.10.9.8", email: "john@example.com", amount: 100, currency: "USD",
-        card_number: "4200000000000000", card_holder: "Jane Doe", status: "failed",
-        type: "Payment", created_at: "2014-09-09 06:21:24"
+        ip_address: "211.10.9.8", email: "john@example.com", amount: 100, currency: "USD",
+        pan: "4200000000000000", pan_name: "Jane Doe", status: "failed",
+        type: "Payment", created_at: "2014-09-09 06:21:24", device_id: "uno",
+        billing_address: "111 1st Street", bin: "420000", ip_country: "US",
+        bin_country: "CA", customer_name: "Smith", phone_number: "123456",
+        billing_address_country: "CA"
       } }
 
     let(:rule) do

@@ -220,6 +220,7 @@ if response.success?
     puts "Condition = " + response.condition
     puts "Alias = " + response.alias
     puts "Active = " + response.active.to_s
+    puts "Created at = " + response.created_at.to_s
 else
     puts "Error #{response.error}"
 end
@@ -240,6 +241,7 @@ if response.success?
     puts "Condition = " + response.condition
     puts "Alias = " + response.alias
     puts "Active = " + response.active.to_s
+    puts "Created at = " + response.created_at.to_s
 else
     puts "Error #{response.error}"
 end
@@ -261,6 +263,7 @@ if response.success?
         puts "Condition = " + r.condition
         puts "Alias = " + r.alias
         puts "Active = " + r.active.to_s
+        puts "Created at = " + response.created_at.to_s
     end
 else
     puts "Error #{response.error}"
@@ -276,9 +279,12 @@ else
 end
 
 # add data for rules
-response = rule.add_data(ip: "211.10.9.8", email: "john@example.com", amount: 100, currency: "USD",
-    card_number: "4200000000000000", card_holder: "Jane Doe", status: "failed",
-    type: "Payment", created_at: "2014-09-09 06:21:24")
+response = rule.add_data(ip_address: "211.10.9.8", email: "john@example.com", amount: 100, currency: "USD",
+    pan: "sha(salt with pan)", pan_name: "Jane Doe", status: "failed",
+    type: "Payment", created_at: "2014-09-09 06:21:24",  device_id: "uno",
+    billing_address: "111 1st Street", bin: "420000", ip_country: "US",
+    bin_country: "CA", customer_name: "Smith", phone_number: "123456",
+    billing_address_country: "CA")
 if response.success?
     puts response.message
 else
