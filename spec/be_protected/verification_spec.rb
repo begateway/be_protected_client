@@ -10,7 +10,7 @@ describe BeProtected::Verification do
   describe ".verify" do
     let(:params) { {
         limit: {key: "USD_ID", volume: 585},
-        blacklist: {ip: "127.0.7.10", email: "john@example.com"},
+        white_black_list: {ip: "127.0.7.10", email: "john@example.com"},
         rules: {ip: "127.0.0.8", card_number: "4200000000000000"}
       } }
     let(:verification) do
@@ -31,9 +31,7 @@ describe BeProtected::Verification do
             volume: false, count: false, max: false,
             current_volume: 10585, current_count: 15
           },
-          blacklist: {
-            ip: false, email: false
-          },
+          white_black_list: { ip: "absent", email: "white" },
           rules: {
             'parent account' => {'alias 1' => {'Transaction amount more than 100 EUR' => 'skipped'}},
             'child account'  => {'alias 5' => {'Transaction amount more than 90 USD'  => 'passed'}}
@@ -71,29 +69,42 @@ describe BeProtected::Verification do
         end
       end
 
-      context "when blacklist includes passed item" do
-        let(:response) { { blacklist: { ip: true, email: false } } }
+      context "when white_black_list includes passed item in blacklist" do
+        let(:response) { { white_black_list: { ip: "black", email: "absent" } } }
 
         its(:passed?) { should be false }
 
         context "attributes" do
-          subject { verification_result.blacklist }
+          subject { verification_result.white_black_list }
 
-          its(:ip)    { should be true }
-          its(:email) { should be false }
+          its(:ip)    { should == "black" }
+          its(:email) { should == "absent" }
         end
       end
 
-      context "when blacklist does not include passed item" do
-        let(:response) { { blacklist: { ip: false, email: false } } }
+      context "when white_black_list includes passed item in white list" do
+        let(:response) { { white_black_list: { ip: "white", email: "black" } } }
 
         its(:passed?) { should be true }
 
         context "attributes" do
-          subject { verification_result.blacklist }
+          subject { verification_result.white_black_list }
 
-          its(:ip)    { should be false }
-          its(:email) { should be false }
+          its(:ip)    { should == "white" }
+          its(:email) { should == "black" }
+        end
+      end
+
+      context "when white_black_list does not include passed item in any list" do
+        let(:response) { { white_black_list: { ip: "absent", email: "absent" } } }
+
+        its(:passed?) { should be true }
+
+        context "attributes" do
+          subject { verification_result.white_black_list }
+
+          its(:ip)    { should == "absent" }
+          its(:email) { should == "absent" }
         end
       end
 
@@ -128,17 +139,17 @@ describe BeProtected::Verification do
       let(:status)   { 200 }
       let(:response) { {
           limit: { error: "Cannot verify limits." },
-          blacklist: { error: "Cannot verify blacklist." }
+          white_black_list: { error: "Cannot verify white_black_list." }
         } }
       let(:hash_response) { {
           limit: {volume: nil, count: nil, max: nil, current_volume: nil, current_count: nil} ,
-          blacklist: {}
+          white_black_list: {}
         } }
 
       its(:status)  { should == 200 }
       its(:passed?) { should be true }
       its(:error?)  { should be true }
-      its(:error_messages) { should == "Limit: #{response[:limit][:error]} Blacklist: #{response[:blacklist][:error]}" }
+      its(:error_messages) { should == "Limit: #{response[:limit][:error]} WhiteBlackList: #{response[:white_black_list][:error]}" }
       its(:to_hash) { should == hash_response }
     end
 

@@ -3,7 +3,7 @@ module BeProtected
     class Verification < Base
       autoload :Limit, 'be_protected/response/verification/limit'
       autoload :Rules, 'be_protected/response/verification/rules'
-      autoload :Blacklist, 'be_protected/response/verification/blacklist'
+      autoload :WhiteBlackList, 'be_protected/response/verification/white_black_list'
 
       def passed?
         verifications.any? && verifications.values.all?(&:passed?)
@@ -27,7 +27,7 @@ module BeProtected
 
           verifications.keys.each do |key|
             if verifications[key].error?
-              errors << (key.capitalize << ": " << verifications[key].error)
+              errors << (camelize(key) << ": " << verifications[key].error)
             end
           end
         end.join(" ")
@@ -37,8 +37,8 @@ module BeProtected
         verifications["limit"]
       end
 
-      def blacklist
-        verifications["blacklist"]
+      def white_black_list
+        verifications["white_black_list"]
       end
 
       def rules
@@ -47,7 +47,7 @@ module BeProtected
 
       private
       def verifications
-        @verifications ||= success? ? verification_hash : {}
+        @verifications ||= (success? ? verification_hash : {})
       end
 
       def verification_hash
@@ -61,11 +61,15 @@ module BeProtected
       def build_verification_result(key)
         verification_params = body[key]
 
-        self.class.const_get(key.capitalize.to_sym).new(verification_params)
+        self.class.const_get(camelize(key)).new(verification_params)
       end
 
       def verification_defined?(key)
-        self.class.const_defined?(key.capitalize)
+        self.class.const_defined?(camelize(key))
+      end
+
+      def camelize(string)
+        string.split(/_/).map(&:capitalize).join
       end
 
     end

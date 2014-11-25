@@ -370,7 +370,7 @@ verification_params = {
         key: 'USD_567',
         value: 585     # transaction amount
     },
-    blacklist: {
+    white_black_list: {
         ip: '127.0.0.',
         email: 'john@example.com',
         card_number: 'stampnumberofcard'
@@ -393,12 +393,12 @@ if result.success?
         puts "Max amount per transaction: "          + result.limit.max     # true or false
     end
 
-    if result.blacklist.passed?
-        puts "Blacklist does not include passed items"
+    if result.white_black_list.passed?
+        puts "WhiteBlackList does not include passed items"
     else
-        puts "Ip in blacklist: " + result.blacklist.ip                     # true or false
-        puts "Email in blacklist: " + result.blacklist.email               # true or false
-        puts "Card number in blacklist: " + result.blacklist.card_number   # true or false
+        puts "Ip in: " + result.white_black_list.ip                   # 'white','black' or 'absent'
+        puts "Email in: " + result.white_black_list.email             # 'white','black' or 'absent'
+        puts "Card number in: " + result.white_black_list.card_number # 'white','black' or 'absent'
     end
 
     if result.rules.passed?
@@ -416,8 +416,8 @@ puts "Response as hash:"
 result.to_hash # => {
 #  limit:
 #    {volume: true, count: true, max: true, current_volume: 200, current_count: 15},
-#  blacklist:
-#    {ip: false, email: true, card_number: false},
+#  white_black_list:
+#    {ip: 'white', email: 'black', card_number: 'absent'},
 #  rules:
 #    {'parent account' => {
 #        'alias 1' => {'Transaction amount more than 100 EUR' => 'review'},
