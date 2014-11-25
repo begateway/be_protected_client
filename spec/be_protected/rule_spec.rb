@@ -4,6 +4,7 @@ require 'shared_examples/connection_failed'
 
 describe BeProtected::Rule do
   let(:header) { {'Content-Type' => 'application/json'} }
+  let(:created_at) { Time.now.to_s }
 
   describe ".create" do
     let(:action) { "review" }
@@ -37,6 +38,7 @@ describe BeProtected::Rule do
           action: "review",
           condition: "Unique CardHolder count more than 5 in 36 hours",
           alias: "rule_1",
+          created_at: created_at,
           active: true
         }
       end
@@ -47,6 +49,7 @@ describe BeProtected::Rule do
       its(:condition)    { should == "Unique CardHolder count more than 5 in 36 hours" }
       its(:alias)  { should == "rule_1" }
       its(:active) { should == true }
+      its(:created_at) { should == created_at }
       it_behaves_like "successful response"
     end
 
@@ -75,6 +78,7 @@ describe BeProtected::Rule do
           action: "review",
           condition: "Unique CardHolder count more than 5 in 36 hours",
           alias: "rule_2",
+          created_at: created_at,
           active: true
         }
       end
@@ -85,6 +89,7 @@ describe BeProtected::Rule do
       its(:condition)    { should == "Unique CardHolder count more than 5 in 36 hours" }
       its(:alias)  { should == "rule_2" }
       its(:active) { should == true }
+      its(:created_at) { should == created_at }
       it_behaves_like "successful response"
     end
 
@@ -110,10 +115,10 @@ describe BeProtected::Rule do
         { rules:
           [{uuid: "100cebebc", account_uuid: "c9510127", action: "review",
              condition: "Unique CardHolder count more than 5 in 36 hours",
-             alias: "rule_2", active: true},
+             alias: "rule_2", active: true, created_at: created_at},
            {uuid: "200cebebc", account_uuid: "a1000127", action: "reject",
              condition: "Unique CardHolder count more than 15 in 6 hours",
-             alias: "rule_25", active: false}
+             alias: "rule_25", active: false, created_at: created_at}
           ]
         }
       end
@@ -124,6 +129,7 @@ describe BeProtected::Rule do
         expect(subject.first.uuid).to eq("100cebebc")
         expect(subject[0].action).to eq("review")
         expect(subject[0].alias).to eq("rule_2")
+        expect(subject[0].created_at).to eq(created_at)
         expect(subject[1].account_uuid).to eq("a1000127")
         expect(subject[1].condition).to eq("Unique CardHolder count more than 15 in 6 hours")
         expect(subject[1].active).to eq(false)
@@ -157,6 +163,7 @@ describe BeProtected::Rule do
           action: "reject",
           condition: "Unique CardHolder count more than 5 in 36 hours",
           alias: "rule_2",
+          created_at: created_at,
           active: false
         }
       end
@@ -168,6 +175,8 @@ describe BeProtected::Rule do
       its(:action)   { should == "reject" }
       its(:alias)    { should == "rule_2" }
       its(:active) { should == false }
+      its(:created_at) { should == created_at }
+
       it_behaves_like "successful response"
     end
 

@@ -3,7 +3,7 @@ module BeProtected
     class Rule < Base
 
       key_reader :uuid, :account_uuid, :action, :condition,
-      :alias, :active, :message, for: :body
+      :alias, :active, :message, :created_at, for: :body
 
     end
   end
