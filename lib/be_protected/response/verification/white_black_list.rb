@@ -3,7 +3,7 @@ require "be_protected/response/attributes"
 module BeProtected
   module Response
     class Verification
-      class Blacklist
+      class WhiteBlackList
 
         extend ::BeProtected::Response::Attributes
 
@@ -15,7 +15,7 @@ module BeProtected
         end
 
         def passed?
-          all_attributes_equal_false? || error?
+          any_attribute_equal_white? || all_attribute_equal_absent? || error?
         end
 
         def error?
@@ -41,8 +41,13 @@ module BeProtected
         end
 
         private
-        def all_attributes_equal_false?
-          attributes.all? {|key, value| value == false}
+
+        def any_attribute_equal_white?
+          attributes.any? {|key, value| value == "white"}
+        end
+
+        def all_attribute_equal_absent?
+          attributes.all? {|key, value| value == "absent"}
         end
 
       end

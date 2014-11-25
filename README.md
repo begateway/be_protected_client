@@ -220,6 +220,7 @@ if response.success?
     puts "Condition = " + response.condition
     puts "Alias = " + response.alias
     puts "Active = " + response.active.to_s
+    puts "Created at = " + response.created_at.to_s
 else
     puts "Error #{response.error}"
 end
@@ -240,6 +241,7 @@ if response.success?
     puts "Condition = " + response.condition
     puts "Alias = " + response.alias
     puts "Active = " + response.active.to_s
+    puts "Created at = " + response.created_at.to_s
 else
     puts "Error #{response.error}"
 end
@@ -261,6 +263,7 @@ if response.success?
         puts "Condition = " + r.condition
         puts "Alias = " + r.alias
         puts "Active = " + r.active.to_s
+        puts "Created at = " + response.created_at.to_s
     end
 else
     puts "Error #{response.error}"
@@ -276,9 +279,12 @@ else
 end
 
 # add data for rules
-response = rule.add_data(ip: "211.10.9.8", email: "john@example.com", amount: 100, currency: "USD",
-    card_number: "4200000000000000", card_holder: "Jane Doe", status: "failed",
-    type: "Payment", created_at: "2014-09-09 06:21:24")
+response = rule.add_data(ip_address: "211.10.9.8", email: "john@example.com", amount: 100, currency: "USD",
+    pan: "sha(salt with pan)", pan_name: "Jane Doe", status: "failed",
+    type: "Payment", created_at: "2014-09-09 06:21:24",  device_id: "uno",
+    billing_address: "111 1st Street", bin: "420000", ip_country: "US",
+    bin_country: "CA", customer_name: "Smith", phone_number: "123456",
+    billing_address_country: "CA")
 if response.success?
     puts response.message
 else
@@ -364,7 +370,7 @@ verification_params = {
         key: 'USD_567',
         value: 585     # transaction amount
     },
-    blacklist: {
+    white_black_list: {
         ip: '127.0.0.',
         email: 'john@example.com',
         card_number: 'stampnumberofcard'
@@ -387,12 +393,12 @@ if result.success?
         puts "Max amount per transaction: "          + result.limit.max     # true or false
     end
 
-    if result.blacklist.passed?
-        puts "Blacklist does not include passed items"
+    if result.white_black_list.passed?
+        puts "WhiteBlackList does not include passed items"
     else
-        puts "Ip in blacklist: " + result.blacklist.ip                     # true or false
-        puts "Email in blacklist: " + result.blacklist.email               # true or false
-        puts "Card number in blacklist: " + result.blacklist.card_number   # true or false
+        puts "Ip in: " + result.white_black_list.ip                   # 'white','black' or 'absent'
+        puts "Email in: " + result.white_black_list.email             # 'white','black' or 'absent'
+        puts "Card number in: " + result.white_black_list.card_number # 'white','black' or 'absent'
     end
 
     if result.rules.passed?
@@ -410,8 +416,8 @@ puts "Response as hash:"
 result.to_hash # => {
 #  limit:
 #    {volume: true, count: true, max: true, current_volume: 200, current_count: 15},
-#  blacklist:
-#    {ip: false, email: true, card_number: false},
+#  white_black_list:
+#    {ip: 'white', email: 'black', card_number: 'absent'},
 #  rules:
 #    {'parent account' => {
 #        'alias 1' => {'Transaction amount more than 100 EUR' => 'review'},
