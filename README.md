@@ -157,13 +157,6 @@ else
     puts "Error #{response.error}"
     puts "Raw response: #{response.raw}"
 end
-
-# you can check is value included in blacklist or not
-case  blacklist.included?("some value")
-when true  then "included"
-when false then "not included"
-else            "can't check (may be service is not available)"
-end
 ```
 
 ### Managing whitelist
@@ -410,6 +403,16 @@ if result.success?
     if result.error?
         puts "Some errors: " + result.error_messages
     end
+end
+
+
+# you can verify value in white black list
+result = verification.white_black_list_verify('any value')
+case result
+when 'absent' then "Value is absent in white and black list"
+when 'white'  then "Value is included in whitelist"
+when 'black'  then "Value is included in blacklist"
+else                "can't verify (may be service is not available)"
 end
 
 puts "Response as hash:"
