@@ -158,4 +158,54 @@ describe BeProtected::Verification do
     it_behaves_like "connection failed"
   end
 
+  describe ".white_black_list_verify" do
+    let(:value) { 'any value' }
+    let(:params) { { white_black_list: {value: value} } }
+    let(:verification) do
+      described_class.new(credentials) do |builder|
+        builder.adapter :test do |stub|
+          stub.post('/verification', params.to_json)  { |env| [status, header, response] }
+        end
+      end
+    end
+
+    subject { verification.white_black_list_verify(value) }
+
+    context "when value is included in whitelist" do
+      let(:status)   { 200 }
+      let(:response) { {white_black_list: {value: "white"}}.to_json  }
+
+      it { should == 'white' }
+    end
+
+    context "when value is included in blacklist" do
+      let(:status)   { 200 }
+      let(:response) { {white_black_list: {value: "black"}}.to_json  }
+
+      it { should == 'black' }
+    end
+
+    context "when value is absent in white and black list" do
+      let(:status)   { 200 }
+      let(:response) { {white_black_list: {value: "absent"}}.to_json  }
+
+      it { should == 'absent' }
+    end
+
+    context "when response is error" do
+      let(:status)   { 200 }
+      let(:response) { {white_black_list: { error: "Cannot verify white_black_list." }}  }
+
+      it { should be_nil }
+    end
+
+    context "when response is unknown" do
+      let(:status)   { 503 }
+      let(:response) { 'unknown response' }
+
+      it { should be_nil }
+    end
+
+  end
+
 end
