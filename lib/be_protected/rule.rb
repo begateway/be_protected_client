@@ -23,7 +23,7 @@ module BeProtected
     end
 
     def add_data(params)
-      Response::Rule.new request(:post, resource_path + '/data', converted_params(params))
+      Response::Rule.new request(:post, resource_path + '/data', converted_params!(params))
     end
 
     private
@@ -33,10 +33,8 @@ module BeProtected
       end
     end
 
-    def converted_params(params)
-      params.each_pair do |key, value|
-        params[key] = '' if value.nil?
-      end
+    def converted_params!(params)
+      params.each_pair { |key, value| params[key] = '' if value.nil? }
     end
 
   end
