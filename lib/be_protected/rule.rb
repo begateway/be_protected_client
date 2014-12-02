@@ -23,13 +23,19 @@ module BeProtected
     end
 
     def add_data(params)
-      Response::Rule.new request(:post, resource_path + '/data', params)
+      Response::Rule.new request(:post, resource_path + '/data', converted_params(params))
     end
 
     private
     def resource_path(uuid = nil)
       "/rules".tap do |path|
         path << "/#{uuid}" if uuid
+      end
+    end
+
+    def converted_params(params)
+      params.each_pair do |key, value|
+        params[key] = '' if value.nil?
       end
     end
 
