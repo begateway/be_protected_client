@@ -215,14 +215,19 @@ describe BeProtected::Rule do
         pan: "4200000000000000", pan_name: "Jane Doe", status: "failed",
         type: "Payment", created_at: "2014-09-09 06:21:24", device_id: "uno",
         billing_address: "111 1st Street", bin: "420000", ip_country: "US",
-        bin_country: "CA", customer_name: "Smith", phone_number: "123456",
+        bin_country: "CA", customer_name: "Smith", phone_number: nil,
         billing_address_country: "CA"
       } }
+    let(:converted_params) {
+      converted = params.clone
+      converted[:phone_number] = ''
+      converted
+    }
 
     let(:rule) do
       described_class.new do |builder|
         builder.adapter :test do |stub|
-          stub.post('/rules/data', params.to_json)  { |env| [status, header, response] }
+          stub.post('/rules/data', converted_params.to_json)  { |env| [status, header, response] }
         end
       end
     end

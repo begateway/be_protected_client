@@ -23,7 +23,7 @@ module BeProtected
     end
 
     def add_data(params)
-      Response::Rule.new request(:post, resource_path + '/data', params)
+      Response::Rule.new request(:post, resource_path + '/data', convert_params!(params))
     end
 
     private
@@ -31,6 +31,10 @@ module BeProtected
       "/rules".tap do |path|
         path << "/#{uuid}" if uuid
       end
+    end
+
+    def convert_params!(params)
+      params.each_pair { |key, value| params[key] = '' if value.nil? }
     end
 
   end
