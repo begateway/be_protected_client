@@ -14,12 +14,16 @@ module BeProtected
         end
 
         def passed?
-          attributes.keys.each do |account|
-            attributes[account].keys.each do |alias_name|
-              return false if attributes[account][alias_name].values.include?('reject')
+          !has_action?('reject')
+        end
+
+        def has_action?(action)
+          attributes.values.each do |account_result|
+            account_result.values.each do |rules_result|
+              return true if rules_result.values.include?(action)
             end
           end
-          true
+          false
         end
 
         def error?
@@ -29,7 +33,6 @@ module BeProtected
         def to_hash
           attributes
         end
-
       end
     end
   end

@@ -118,7 +118,10 @@ describe BeProtected::Rule do
              alias: "rule_2", active: true, created_at: created_at},
            {uuid: "200cebebc", account_uuid: "a1000127", action: "reject",
              condition: "Unique CardHolder count more than 15 in 6 hours",
-             alias: "rule_25", active: false, created_at: created_at}
+             alias: "rule_25", active: false, created_at: created_at},
+           {uuid: "200cebddc", account_uuid: "b1000213", action: "skip_3ds",
+             condition: "Transaction amount less than 10 USD",
+             alias: "rule_25", active: true, created_at: created_at}
           ]
         }
       end
@@ -133,6 +136,7 @@ describe BeProtected::Rule do
         expect(subject[1].account_uuid).to eq("a1000127")
         expect(subject[1].condition).to eq("Unique CardHolder count more than 15 in 6 hours")
         expect(subject[1].active).to eq(false)
+        expect(subject[2].action).to eq("skip_3ds")
       end
       it_behaves_like "successful response"
     end
