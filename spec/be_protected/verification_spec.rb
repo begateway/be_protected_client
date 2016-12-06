@@ -52,7 +52,7 @@ describe BeProtected::Verification do
           }
         }
 
-        it "return true on has_action? call" do
+        it "returns true on has_action? call" do
           expect(verification_result.has_action?('skip_3ds')).to be_truthy
           expect(verification_result.rules.has_action?('skip_3ds')).to be_truthy
 
