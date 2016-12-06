@@ -14,7 +14,7 @@ module BeProtected
       end
 
       def has_action?(action)
-        !rules.nil? && rules.has_action?(action)
+        rules && rules.has_action?(action)
       end
 
       def to_hash

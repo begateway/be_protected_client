@@ -45,12 +45,13 @@ describe BeProtected::Verification do
       it_behaves_like "successful response"
 
       context "when has_action skip_3ds" do
-        let(:response) {
-          { rules: {
+        let(:response) do
+          {
+            rules: {
               'system account' => {'alias 7' => {'Transaction amount more than 90 USD'  => 'skip_3ds'}}  
             }
           }
-        }
+        end
 
         it "returns true on has_action? call" do
           expect(verification_result.has_action?('skip_3ds')).to be_truthy
