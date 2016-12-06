@@ -44,6 +44,23 @@ describe BeProtected::Verification do
 
       it_behaves_like "successful response"
 
+      context "when has_action skip_3ds" do
+        let(:response) {
+          { rules: {
+              'system account' => {'alias 7' => {'Transaction amount more than 90 USD'  => 'skip_3ds'}}  
+            }
+          }
+        }
+
+        it "return true on has_action? call" do
+          expect(verification_result.has_action?('skip_3ds')).to be_truthy
+          expect(verification_result.rules.has_action?('skip_3ds')).to be_truthy
+
+          expect(verification_result.has_action?('skip_3ds_fun')).to_not be_truthy
+          expect(verification_result.rules.has_action?('skip_3ds_fun')).to_not be_truthy
+        end
+      end
+
       context "when limit was exceeded" do
         let(:response) { { limit: {
             volume: true, count: false, max: true,
@@ -205,7 +222,5 @@ describe BeProtected::Verification do
 
       it { should be_nil }
     end
-
   end
-
 end

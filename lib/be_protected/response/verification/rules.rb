@@ -31,7 +31,6 @@ module BeProtected
           false
         end
 
-        
         def error?
           attributes.has_key?("error")
         end
@@ -39,7 +38,6 @@ module BeProtected
         def to_hash
           attributes
         end
-
       end
     end
   end
