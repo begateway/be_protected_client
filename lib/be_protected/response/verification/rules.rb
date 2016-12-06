@@ -22,6 +22,16 @@ module BeProtected
           true
         end
 
+        def has_action?(action)
+          attributes.keys.each do |account|
+            attributes[account].keys.each do |alias_name|
+              return true if attributes[account][alias_name].values.include?(action)
+            end
+          end
+          false
+        end
+
+        
         def error?
           attributes.has_key?("error")
         end

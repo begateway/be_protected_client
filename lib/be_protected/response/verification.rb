@@ -13,6 +13,10 @@ module BeProtected
         verifications.any? && verifications.values.any?(&:error?)
       end
 
+      def has_action?(action)
+        rules.present? && rules.has_action?(action)
+      end
+
       def to_hash
         {}.tap do |hash|
           verifications.keys.each do |key|
