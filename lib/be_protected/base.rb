@@ -6,11 +6,12 @@ require "be_protected/middleware"
 module BeProtected
   class Base
 
-    attr_reader :auth_login, :auth_password, :options
+    attr_reader :auth_login, :auth_password, :options, :passed_headers
 
     def initialize(opts = {}, &block)
       @auth_login    = opts[:auth_login]
       @auth_password = opts[:auth_password]
+      @passed_headers= opts[:headers]
       @options = {
         connection_opts:  opts[:connection_opts],
         connection_build: block
@@ -51,6 +52,7 @@ module BeProtected
     def connection_opts
       (options[:connection_opts] || {}).tap do |opts|
         opts[:proxy] = Configuration.proxy if Configuration.proxy
+        opts[:headers] = passed_headers if passed_headers
       end
     end
 

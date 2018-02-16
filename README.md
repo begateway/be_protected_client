@@ -354,8 +354,9 @@ end
 beprotected_credentials = {auth_login: 'login', auth_password: 'password'}
 account = BeProtected::Account.new(beprotected_credentials).create('Account name')
 
-credentials = {auth_login: account.uuid, auth_password: account.token}
-verification = BeProtected::Verification.new(credentials)
+headers = {'RequestID' => 'some-your-request-id'}
+beprotected_options = {auth_login: account.uuid, auth_password: account.token, headers: headers}
+verification = BeProtected::Verification.new(beprotected_options)
 
 # verify
 verification_params = {
