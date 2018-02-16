@@ -6,7 +6,8 @@ describe BeProtected::Base do
   let(:connection_opts) { {ssl: {}} }
   let(:connection_build) { Proc.new{} }
   let(:opts) { { auth_login: auth_login, auth_password: auth_password,
-      connection_opts: connection_opts } }
+      connection_opts: connection_opts, headers: headers } }
+  let(:headers) { {'RequestID' => 'some-id'} }
 
   describe "initialize" do
     subject { described_class.new(opts, &connection_build) }
@@ -18,6 +19,10 @@ describe BeProtected::Base do
 
     it "assigns options" do
       expect(subject.options).to eq({connection_opts: connection_opts, connection_build: connection_build})
+    end
+
+    it "assigns passed headers" do
+      expect(subject.passed_headers).to eq(headers)
     end
   end
 
@@ -58,12 +63,16 @@ describe BeProtected::Base do
       allow(connection).to receive(:build).and_yield(builder)
       allow(Faraday::Connection).to receive(:new).and_return(connection)
 
-      allow(connection).to receive(:basic_auth)
+      allow(connection).to receive(:basic_auth).with(auth_login, auth_password)
       allow(connection).to receive(:request).with(:json)
       allow(connection).to receive(:use).with(BeProtected::Middleware::ParseJson)
       expect(builder).to receive(:adapter).with(:test)
 
       subject.connection
+    end
+
+    it "sets passed headers" do
+      expect(subject.connection.headers).to include(headers)
     end
   end
 
