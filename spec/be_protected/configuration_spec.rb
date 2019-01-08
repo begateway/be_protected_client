@@ -20,5 +20,22 @@ describe BeProtected::Configuration do
 
       expect(described_class.proxy).to eq(proxy)
     end
+
+    it "sets open_timeout" do
+      described_class.setup do |config|
+        config.open_timeout = 5
+      end
+
+      expect(described_class.open_timeout).to eq(5)
+    end
+
+    it "sets read_timeout" do
+      described_class.setup do |config|
+        config.read_timeout = 10
+      end
+
+      expect(described_class.read_timeout).to eq(10)
+    end
+
   end
 end
