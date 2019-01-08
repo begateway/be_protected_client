@@ -29,11 +29,15 @@ describe BeProtected::Base do
   describe "#connection" do
     let(:url)   { 'http://beprotected.com:8080' }
     let(:proxy) { 'http://192.168.66.1:1234/' }
+    let(:read_timeout) { 25 }
+    let(:open_timeout) { 15 }
 
     before do
       BeProtected::Configuration.setup do |config|
         config.url   = url
         config.proxy = proxy
+        config.read_timeout = read_timeout
+        config.open_timeout = open_timeout
       end
     end
 
@@ -73,6 +77,11 @@ describe BeProtected::Base do
 
     it "sets passed headers" do
       expect(subject.connection.headers).to include(headers)
+    end
+
+    it "sets read_timeout and open_timeout" do
+      expect(subject.connection.options.timeout).to eq(read_timeout)
+      expect(subject.connection.options.open_timeout).to eq(open_timeout)
     end
   end
 

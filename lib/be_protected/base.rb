@@ -53,11 +53,23 @@ module BeProtected
       (options[:connection_opts] || {}).tap do |opts|
         opts[:proxy] = Configuration.proxy if Configuration.proxy
         opts[:headers] = passed_headers if passed_headers
+        # timeouts
+        opts[:request] = opts[:request] || {}
+        opts[:request].update(timeout: read_timeout)      unless opts.dig(:request, :timeout)
+        opts[:request].update(open_timeout: open_timeout) unless opts.dig(:request, :open_timeout)
       end
     end
 
     def site_url
       Configuration.url
+    end
+
+    def read_timeout
+      Configuration.read_timeout || 60
+    end
+
+    def open_timeout
+      Configuration.open_timeout || 60
     end
 
   end
