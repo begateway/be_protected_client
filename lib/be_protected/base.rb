@@ -65,11 +65,11 @@ module BeProtected
     end
 
     def read_timeout
-      Configuration.read_timeout || 60
+      Configuration.read_timeout || 15
     end
 
     def open_timeout
-      Configuration.open_timeout || 60
+      Configuration.open_timeout || 5
     end
 
   end
