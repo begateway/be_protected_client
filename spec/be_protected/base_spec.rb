@@ -39,15 +39,13 @@ describe BeProtected::Base do
         config.read_timeout = read_timeout
         config.open_timeout = open_timeout
       end
-    end
 
-    subject do
-      described_class.new(opts) do |builder|
-        builder.adapter :test do |stub|
-          stub.get('/headers') { |env| [200, {}, env[:request_headers]] }
-        end
+      Faraday::Adapter::Test::Stubs.new do |stub|
+        stub.get('/headers') { |env| [200, {}, env[:request_headers]] }
       end
     end
+
+    subject { described_class.new(opts) }
 
     it "assigns url from configuration" do
       expect(subject.connection.host).to eq('beprotected.com')
@@ -61,18 +59,12 @@ describe BeProtected::Base do
     end
 
     it "configures Faraday connection" do
-      builder  = double('builder')
-      connection = double('connection')
+      connection = subject.connection
 
-      allow(connection).to receive(:build).and_yield(builder)
-      allow(Faraday::Connection).to receive(:new).and_return(connection)
-
-      allow(connection).to receive(:basic_auth).with(auth_login, auth_password)
-      allow(connection).to receive(:request).with(:json)
-      allow(connection).to receive(:use).with(BeProtected::Middleware::ParseJson)
-      expect(builder).to receive(:adapter).with(:test)
-
-      subject.connection
+      expect(connection).to be_instance_of Faraday::Connection
+      expect(connection.handlers).to eq [FaradayMiddleware::EncodeJson,
+                                         BeProtected::Middleware::ParseJson,
+                                         Faraday::Adapter::NetHttp]
     end
 
     it "sets passed headers" do

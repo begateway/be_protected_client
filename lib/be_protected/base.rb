@@ -19,23 +19,18 @@ module BeProtected
     end
 
     def connection
-      @connection ||=
-        begin
-          connection = Faraday.new(site_url, connection_opts)
+      @connection ||= Faraday.new(site_url, connection_opts) do |faraday|
+        faraday.basic_auth(auth_login, auth_password)
+        faraday.request :json
+        faraday.use BeProtected::Middleware::ParseJson
+        faraday.adapter Faraday.default_adapter
 
-          connection.build do |builder|
-            options[:connection_build].call(builder)
-          end if options[:connection_build]
-
-          connection.basic_auth(auth_login, auth_password)
-          connection.request :json
-          connection.use BeProtected::Middleware::ParseJson
-
-          connection
-        end
+        faraday.build { |builder| options[:connection_build].call(builder) } if options[:connection_build]
+      end
     end
 
     protected
+
     def request(method, path, params = nil)
       connection.send(method, path, params) do |req|
         if method == :post
