@@ -4,21 +4,20 @@ describe BeProtected::Base do
   let(:auth_login) { 'login' }
   let(:auth_password) { 'password' }
   let(:connection_opts) { {ssl: {}} }
-  let(:connection_build) { Proc.new{} }
   let(:opts) { { auth_login: auth_login, auth_password: auth_password,
       connection_opts: connection_opts, headers: headers } }
   let(:headers) { {'RequestID' => 'some-id'} }
 
   describe "initialize" do
-    subject { described_class.new(opts, &connection_build) }
+    subject { described_class.new(opts) }
 
     it "assigns auth_login and auth_password" do
       expect(subject.auth_login).to eq(auth_login)
       expect(subject.auth_password).to eq(auth_password)
     end
 
-    it "assigns options" do
-      expect(subject.options).to eq({connection_opts: connection_opts, connection_build: connection_build})
+    it "assigns connection options" do
+      expect(subject.connection_opts).to eq(connection_opts)
     end
 
     it "assigns passed headers" do
@@ -62,9 +61,9 @@ describe BeProtected::Base do
       connection = subject.connection
 
       expect(connection).to be_instance_of Faraday::Connection
-      expect(connection.handlers).to eq [FaradayMiddleware::EncodeJson,
-                                         BeProtected::Middleware::ParseJson,
-                                         Faraday::Adapter::NetHttp]
+      expect(connection.builder.handlers).to eq [FaradayMiddleware::EncodeJson,
+                                                 BeProtected::Middleware::ParseJson,
+                                                 Faraday::Adapter::NetHttp]
     end
 
     it "sets passed headers" do

@@ -6,19 +6,22 @@ require 'shared_examples/connection_failed'
 describe BeProtected::Whitelist do
   let(:header) { {'Content-Type' => 'application/json'} }
   let(:credentials) { {auth_login: 'account_uuid', auth_password: 'account_token'} }
-  let(:value)  { "any value" }
+  let(:whitelist) { described_class.new }
+  let(:value) { "value" }
+
+  before { BeProtected::Configuration.url = 'http://example.com' }
 
   describe ".add" do
-    let(:params) { {value: value} }
-    let(:whitelist) do
-      described_class.new(credentials) do |builder|
-        builder.adapter :test do |stub|
-          stub.post('/whitelist', params.to_json)  { |env| [status, header, response] }
-        end
-      end
-    end
+    let(:method) { :post }
+    let(:params) { { value: value } }
 
     subject { whitelist.add(value) }
+
+    before do
+      stub_request(:post, "http://example.com/whitelist")
+        .with(body: params.to_json)
+        .to_return(status: status, body: response, headers: header)
+    end
 
     context "when response is successful" do
       let(:status)   { 201 }
@@ -36,16 +39,14 @@ describe BeProtected::Whitelist do
   end
 
   describe ".get" do
-    let(:params) { {value: value, persisted: true} }
-    let(:whitelist) do
-      described_class.new(credentials) do |builder|
-        builder.adapter :test do |stub|
-          stub.get(URI.escape("/whitelist/#{value}")) { |env| [status, header, response] }
-        end
-      end
-    end
+    let(:params) { { value: value, persisted: true } }
 
     subject { whitelist.get(value) }
+
+    before do
+      stub_request(:get, "http://example.com/whitelist/#{value}")
+        .to_return(status: status, body: response, headers: header)
+    end
 
     context "when response is successful" do
       let(:status)   { 200 }
@@ -63,15 +64,12 @@ describe BeProtected::Whitelist do
   end
 
   describe ".delete" do
-    let(:whitelist) do
-      described_class.new(credentials) do |builder|
-        builder.adapter :test do |stub|
-          stub.delete(URI.escape("/whitelist/#{value}")) { |env| [status, header, response] }
-        end
-      end
-    end
-
     subject { whitelist.delete(value) }
+
+    before do
+      stub_request(:delete, "http://example.com/whitelist/#{value}")
+        .to_return(status: status, body: response, headers: header)
+    end
 
     context "when response is successful" do
       let(:status)   { 204 }
