@@ -4,21 +4,20 @@ describe BeProtected::Base do
   let(:auth_login) { 'login' }
   let(:auth_password) { 'password' }
   let(:connection_opts) { {ssl: {}} }
-  let(:connection_build) { Proc.new{} }
   let(:opts) { { auth_login: auth_login, auth_password: auth_password,
       connection_opts: connection_opts, headers: headers } }
   let(:headers) { {'RequestID' => 'some-id'} }
 
   describe "initialize" do
-    subject { described_class.new(opts, &connection_build) }
+    subject { described_class.new(opts) }
 
     it "assigns auth_login and auth_password" do
       expect(subject.auth_login).to eq(auth_login)
       expect(subject.auth_password).to eq(auth_password)
     end
 
-    it "assigns options" do
-      expect(subject.options).to eq({connection_opts: connection_opts, connection_build: connection_build})
+    it "assigns connection options" do
+      expect(subject.connection_opts).to eq(connection_opts)
     end
 
     it "assigns passed headers" do
@@ -39,15 +38,13 @@ describe BeProtected::Base do
         config.read_timeout = read_timeout
         config.open_timeout = open_timeout
       end
-    end
 
-    subject do
-      described_class.new(opts) do |builder|
-        builder.adapter :test do |stub|
-          stub.get('/headers') { |env| [200, {}, env[:request_headers]] }
-        end
+      Faraday::Adapter::Test::Stubs.new do |stub|
+        stub.get('/headers') { |env| [200, {}, env[:request_headers]] }
       end
     end
+
+    subject { described_class.new(opts) }
 
     it "assigns url from configuration" do
       expect(subject.connection.host).to eq('beprotected.com')
@@ -61,18 +58,12 @@ describe BeProtected::Base do
     end
 
     it "configures Faraday connection" do
-      builder  = double('builder')
-      connection = double('connection')
+      connection = subject.connection
 
-      allow(connection).to receive(:build).and_yield(builder)
-      allow(Faraday::Connection).to receive(:new).and_return(connection)
-
-      allow(connection).to receive(:basic_auth).with(auth_login, auth_password)
-      allow(connection).to receive(:request).with(:json)
-      allow(connection).to receive(:use).with(BeProtected::Middleware::ParseJson)
-      expect(builder).to receive(:adapter).with(:test)
-
-      subject.connection
+      expect(connection).to be_instance_of Faraday::Connection
+      expect(connection.builder.handlers).to eq [FaradayMiddleware::EncodeJson,
+                                                 BeProtected::Middleware::ParseJson,
+                                                 Faraday::Adapter::NetHttp]
     end
 
     it "sets passed headers" do

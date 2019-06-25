@@ -1,41 +1,31 @@
 require 'json'
 require 'faraday'
 require 'faraday_middleware'
-require "be_protected/middleware"
+require 'be_protected/middleware'
 
 module BeProtected
   class Base
 
-    attr_reader :auth_login, :auth_password, :options, :passed_headers
+    attr_reader :auth_login, :auth_password, :connection_opts, :passed_headers
 
     def initialize(opts = {}, &block)
-      @auth_login    = opts[:auth_login]
-      @auth_password = opts[:auth_password]
-      @passed_headers= opts[:headers]
-      @options = {
-        connection_opts:  opts[:connection_opts],
-        connection_build: block
-      }
+      @auth_login      = opts[:auth_login]
+      @auth_password   = opts[:auth_password]
+      @passed_headers  = opts[:headers]
+      @connection_opts = opts[:connection_opts]
     end
 
     def connection
-      @connection ||=
-        begin
-          connection = Faraday.new(site_url, connection_opts)
-
-          connection.build do |builder|
-            options[:connection_build].call(builder)
-          end if options[:connection_build]
-
-          connection.basic_auth(auth_login, auth_password)
-          connection.request :json
-          connection.use BeProtected::Middleware::ParseJson
-
-          connection
-        end
+      @connection ||= Faraday.new(site_url, options) do |faraday|
+        faraday.basic_auth(auth_login, auth_password)
+        faraday.request :json
+        faraday.use BeProtected::Middleware::ParseJson
+        faraday.adapter Faraday.default_adapter
+      end
     end
 
     protected
+
     def request(method, path, params = nil)
       connection.send(method, path, params) do |req|
         if method == :post
@@ -49,8 +39,9 @@ module BeProtected
     end
 
     private
-    def connection_opts
-      (options[:connection_opts] || {}).tap do |opts|
+
+    def options
+      (connection_opts || {}).tap do |opts|
         opts[:proxy] = Configuration.proxy if Configuration.proxy
         opts[:headers] = passed_headers if passed_headers
         # timeouts

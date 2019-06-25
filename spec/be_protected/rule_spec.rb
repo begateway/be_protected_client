@@ -5,6 +5,9 @@ require 'shared_examples/connection_failed'
 describe BeProtected::Rule do
   let(:header) { {'Content-Type' => 'application/json'} }
   let(:created_at) { Time.now.to_s }
+  let(:rule) { described_class.new }
+
+  before { BeProtected::Configuration.url = 'http://example.com' }
 
   describe ".create" do
     let(:action) { "review" }
@@ -19,15 +22,13 @@ describe BeProtected::Rule do
       }
     end
 
-    let(:rule) do
-      described_class.new do |builder|
-        builder.adapter :test do |stub|
-          stub.post('/rules', params.to_json)  { |env| [status, header, response] }
-        end
-      end
-    end
-
     subject { rule.create(params) }
+
+    before do
+      stub_request(:post, "http://example.com/rules")
+        .with(body: params.to_json)
+        .to_return(status: status, body: response, headers: header)
+    end
 
     context "when response is successful" do
       let(:status)   { 201 }
@@ -40,7 +41,7 @@ describe BeProtected::Rule do
           alias: "rule_1",
           created_at: created_at,
           active: true
-        }
+        }.to_json
       end
 
       its(:status)   { should == 201 }
@@ -59,15 +60,12 @@ describe BeProtected::Rule do
   end
 
   describe ".get" do
-    let(:rule) do
-      described_class.new do |builder|
-        builder.adapter :test do |stub|
-          stub.get('/rules/100cebebc')  { |env| [status, header, response] }
-        end
-      end
-    end
-
     subject { rule.get("100cebebc") }
+
+    before do
+      stub_request(:get, "http://example.com/rules/100cebebc")
+        .to_return(status: status, body: response, headers: header)
+    end
 
     context "when response is successful" do
       let(:status)   { 200 }
@@ -80,7 +78,7 @@ describe BeProtected::Rule do
           alias: "rule_2",
           created_at: created_at,
           active: true
-        }
+        }.to_json
       end
 
       its(:status)   { should == 200 }
@@ -99,15 +97,12 @@ describe BeProtected::Rule do
   end
 
   describe "get all rules" do
-    let(:rule) do
-      described_class.new do |builder|
-        builder.adapter :test do |stub|
-          stub.get('/rules')  { |env| [status, header, response] }
-        end
-      end
-    end
-
     subject { rule.get }
+
+    before do
+      stub_request(:get, "http://example.com/rules")
+        .to_return(status: status, body: response, headers: header)
+    end
 
     context "when response is successful" do
       let(:status)   { 200 }
@@ -123,7 +118,7 @@ describe BeProtected::Rule do
              condition: "Transaction amount less than 10 USD",
              alias: "rule_25", active: true, created_at: created_at}
           ]
-        }
+        }.to_json
       end
 
       its(:status)   { should == 200 }
@@ -148,15 +143,14 @@ describe BeProtected::Rule do
 
   describe ".update" do
     let(:params) { { action: "reject" } }
-    let(:rule) do
-      described_class.new do |builder|
-        builder.adapter :test do |stub|
-          stub.post('/rules/100cebebc', params.to_json)  { |env| [status, header, response] }
-        end
-      end
-    end
 
     subject { rule.update("100cebebc", params) }
+
+    before do
+      stub_request(:post, "http://example.com/rules/100cebebc")
+        .with(body: params.to_json)
+        .to_return(status: status, body: response, headers: header)
+    end
 
     context "when response is successful" do
       let(:status)   { 200 }
@@ -169,7 +163,7 @@ describe BeProtected::Rule do
           alias: "rule_2",
           created_at: created_at,
           active: false
-        }
+        }.to_json
       end
 
       its(:status)   { should == 200 }
@@ -190,15 +184,12 @@ describe BeProtected::Rule do
   end
 
   describe ".delete" do
-    let(:rule) do
-      described_class.new do |builder|
-        builder.adapter :test do |stub|
-          stub.delete('/rules/100cebebc') { |env| [status, header, response] }
-        end
-      end
-    end
-
     subject { rule.delete("100cebebc") }
+
+    before do
+      stub_request(:delete, "http://example.com/rules/100cebebc")
+        .to_return(status: status, body: response, headers: header)
+    end
 
     context "when response is successful" do
       let(:status)   { 204 }
@@ -222,21 +213,15 @@ describe BeProtected::Rule do
         bin_country: "CA", customer_name: "Smith", phone_number: nil,
         billing_address_country: "CA"
       } }
-    let(:converted_params) {
-      converted = params.clone
-      converted[:phone_number] = ''
-      converted
-    }
-
-    let(:rule) do
-      described_class.new do |builder|
-        builder.adapter :test do |stub|
-          stub.post('/rules/data', converted_params.to_json)  { |env| [status, header, response] }
-        end
-      end
-    end
+    let(:request_params) { params.merge(phone_number: '') }
 
     subject { rule.add_data(params) }
+
+    before do
+      stub_request(:post, "http://example.com/rules/data")
+        .with(body: request_params.to_json)
+        .to_return(status: status, body: response, headers: header)
+    end
 
     context "when response is successful" do
       let(:status)   { 200 }

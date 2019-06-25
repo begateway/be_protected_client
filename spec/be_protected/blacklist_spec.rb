@@ -6,19 +6,21 @@ require 'shared_examples/connection_failed'
 describe BeProtected::Blacklist do
   let(:header) { {'Content-Type' => 'application/json'} }
   let(:credentials) { {auth_login: 'account_uuid', auth_password: 'account_token'} }
-  let(:value)  { "any value" }
+  let(:blacklist) { described_class.new(credentials) }
+  let(:value) { "any value" }
+
+  before { BeProtected::Configuration.url = 'http://example.com' }
 
   describe ".add" do
     let(:params) { {value: value} }
-    let(:blacklist) do
-      described_class.new(credentials) do |builder|
-        builder.adapter :test do |stub|
-          stub.post('/blacklist', params.to_json)  { |env| [status, header, response] }
-        end
-      end
-    end
 
     subject { blacklist.add(value) }
+
+    before do
+      stub_request(:post, "http://example.com/blacklist")
+        .with(body: params.to_json)
+        .to_return(status: status, body: response, headers: header)
+    end
 
     context "when response is successful" do
       let(:status)   { 201 }
@@ -37,15 +39,13 @@ describe BeProtected::Blacklist do
 
   describe ".get" do
     let(:params) { {value: value, persisted: true} }
-    let(:blacklist) do
-      described_class.new(credentials) do |builder|
-        builder.adapter :test do |stub|
-          stub.get(URI.escape("/blacklist/#{value}")) { |env| [status, header, response] }
-        end
-      end
-    end
 
     subject { blacklist.get(value) }
+
+    before do
+      stub_request(:get, "http://example.com/blacklist/#{URI.escape(value)}")
+        .to_return(status: status, body: response, headers: header)
+    end
 
     context "when response is successful" do
       let(:status)   { 200 }
@@ -63,15 +63,12 @@ describe BeProtected::Blacklist do
   end
 
   describe ".delete" do
-    let(:blacklist) do
-      described_class.new(credentials) do |builder|
-        builder.adapter :test do |stub|
-          stub.delete(URI.escape("/blacklist/#{value}")) { |env| [status, header, response] }
-        end
-      end
-    end
-
     subject { blacklist.delete(value) }
+
+    before do
+      stub_request(:delete, "http://example.com/blacklist/#{URI.escape(value)}")
+        .to_return(status: status, body: response, headers: header)
+    end
 
     context "when response is successful" do
       let(:status)   { 204 }

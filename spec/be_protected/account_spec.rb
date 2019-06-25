@@ -4,18 +4,20 @@ require 'shared_examples/connection_failed'
 
 describe BeProtected::Account do
   let(:header) { {'Content-Type' => 'application/json'} }
+  let(:account) { described_class.new }
+
+  before { BeProtected::Configuration.url = 'http://example.com' }
 
   describe ".create" do
     let(:params) { {name: "Jane", parent_uuid: "123abc"} }
-    let(:account) do
-      described_class.new do |builder|
-        builder.adapter :test do |stub|
-          stub.post('/accounts', params.to_json)  { |env| [status, header, response] }
-        end
-      end
-    end
 
-    subject { account.create(params) }
+    subject { described_class.new.create(params) }
+
+    before do
+      stub_request(:post, "http://example.com/accounts")
+        .with(body: params.to_json)
+        .to_return(status: status, body: response, headers: header)
+    end
 
     context "when response is successful" do
       let(:status)   { 201 }
@@ -35,15 +37,12 @@ describe BeProtected::Account do
   end
 
   describe ".get" do
-    let(:account) do
-      described_class.new do |builder|
-        builder.adapter :test do |stub|
-          stub.get('/accounts/uuid2')  { |env| [status, header, response] }
-        end
-      end
-    end
-
     subject { account.get("uuid2") }
+
+    before do
+      stub_request(:get, "http://example.com/accounts/uuid2")
+        .to_return(status: status, body: response, headers: header)
+    end
 
     context "when response is successful" do
       let(:status)   { 200 }
@@ -64,15 +63,14 @@ describe BeProtected::Account do
 
   describe ".update" do
     let(:params) { {name: "John", parent_uuid: "567abc"} }
-    let(:account) do
-      described_class.new do |builder|
-        builder.adapter :test do |stub|
-          stub.post('/accounts/uuid2', params.to_json)  { |env| [status, header, response] }
-        end
-      end
-    end
 
     subject { account.update("uuid2", params) }
+
+    before do
+      stub_request(:post, "http://example.com/accounts/uuid2")
+        .with(body: params.to_json)
+        .to_return(status: status, body: response, headers: header)
+    end
 
     context "when response is successful" do
       let(:status)   { 200 }
