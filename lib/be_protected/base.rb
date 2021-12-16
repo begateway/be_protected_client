@@ -17,7 +17,7 @@ module BeProtected
 
     def connection
       @connection ||= Faraday.new(site_url, options) do |faraday|
-        faraday.basic_auth(auth_login, auth_password)
+        faraday.request :basic_auth, auth_login, auth_password
         faraday.request :json
         faraday.use BeProtected::Middleware::ParseJson
         faraday.adapter Faraday.default_adapter
