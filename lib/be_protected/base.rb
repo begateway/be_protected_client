@@ -33,7 +33,7 @@ module BeProtected
           req.body = params.to_json if params
         end
       end
-    rescue Faraday::Error => e
+    rescue => e # as in new version they added a lot of error classes
       response = OpenStruct.new(status: 500, body: { 'error' => e.to_s } )
       Response::Base.new(response)
     end
