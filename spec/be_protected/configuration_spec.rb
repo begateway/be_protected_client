@@ -37,5 +37,13 @@ describe BeProtected::Configuration do
       expect(described_class.read_timeout).to eq(10)
     end
 
+    it "sets ssl configuration" do
+      described_class.setup do |config|
+        config.ssl = {verify: false}
+      end
+
+      expect(described_class.ssl).to eq({verify: false})
+    end
+
   end
 end

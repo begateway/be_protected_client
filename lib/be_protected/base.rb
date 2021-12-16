@@ -48,6 +48,8 @@ module BeProtected
         opts[:request] = opts[:request] || {}
         opts[:request].update(timeout: read_timeout)      unless opts.dig(:request, :timeout)
         opts[:request].update(open_timeout: open_timeout) unless opts.dig(:request, :open_timeout)
+        # ssl
+        opts[:ssl] = Configuration.ssl if Configuration.ssl
       end
     end
 
