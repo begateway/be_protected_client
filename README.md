@@ -28,6 +28,22 @@ BeProtected::Configuration.setup do |config|
 end
 ```
 
+You can add ssl options via configuration
+
+```ruby
+BeProtected::Configuration.setup do |config|
+    config.ssl = {verify: false}
+    # or
+    config.ssl = {
+      client_cert:  '...',
+      client_key:   '...',
+      ca_file:      '...',
+      ca_path:      '...',
+      cert_store:   '...'
+    }
+end
+```
+
 ### Managing accounts
 
 ```ruby
