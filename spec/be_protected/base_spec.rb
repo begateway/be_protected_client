@@ -61,9 +61,9 @@ describe BeProtected::Base do
       connection = subject.connection
 
       expect(connection).to be_instance_of Faraday::Connection
-      expect(connection.builder.handlers).to eq [FaradayMiddleware::EncodeJson,
-                                                 BeProtected::Middleware::ParseJson,
-                                                 Faraday::Adapter::NetHttp]
+      expect(connection.builder.handlers).to eq [Faraday::Request::BasicAuthentication,
+                                                 FaradayMiddleware::EncodeJson,
+                                                 BeProtected::Middleware::ParseJson]
     end
 
     it "sets passed headers" do
