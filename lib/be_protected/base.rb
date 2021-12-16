@@ -17,7 +17,7 @@ module BeProtected
 
     def connection
       @connection ||= Faraday.new(site_url, options) do |faraday|
-        faraday.basic_auth(auth_login, auth_password)
+        faraday.request :basic_auth, auth_login, auth_password
         faraday.request :json
         faraday.use BeProtected::Middleware::ParseJson
         faraday.adapter Faraday.default_adapter
@@ -33,7 +33,7 @@ module BeProtected
           req.body = params.to_json if params
         end
       end
-    rescue Faraday::Error => e
+    rescue => e # as in new version they added a lot of error classes
       response = OpenStruct.new(status: 500, body: { 'error' => e.to_s } )
       Response::Base.new(response)
     end
@@ -48,6 +48,8 @@ module BeProtected
         opts[:request] = opts[:request] || {}
         opts[:request].update(timeout: read_timeout)      unless opts.dig(:request, :timeout)
         opts[:request].update(open_timeout: open_timeout) unless opts.dig(:request, :open_timeout)
+        # ssl
+        opts[:ssl] = Configuration.ssl if Configuration.ssl
       end
     end
 

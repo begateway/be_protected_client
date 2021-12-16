@@ -30,6 +30,7 @@ describe BeProtected::Base do
     let(:proxy) { 'http://192.168.66.1:1234/' }
     let(:read_timeout) { 25 }
     let(:open_timeout) { 15 }
+    let(:ssl_options)  { {verify: false} }
 
     before do
       BeProtected::Configuration.setup do |config|
@@ -37,6 +38,7 @@ describe BeProtected::Base do
         config.proxy = proxy
         config.read_timeout = read_timeout
         config.open_timeout = open_timeout
+        config.ssl   = ssl_options
       end
 
       Faraday::Adapter::Test::Stubs.new do |stub|
@@ -61,9 +63,9 @@ describe BeProtected::Base do
       connection = subject.connection
 
       expect(connection).to be_instance_of Faraday::Connection
-      expect(connection.builder.handlers).to eq [FaradayMiddleware::EncodeJson,
-                                                 BeProtected::Middleware::ParseJson,
-                                                 Faraday::Adapter::NetHttp]
+      expect(connection.builder.handlers).to eq [Faraday::Request::BasicAuthentication,
+                                                 FaradayMiddleware::EncodeJson,
+                                                 BeProtected::Middleware::ParseJson]
     end
 
     it "sets passed headers" do
@@ -73,6 +75,10 @@ describe BeProtected::Base do
     it "sets read_timeout and open_timeout" do
       expect(subject.connection.options.timeout).to eq(read_timeout)
       expect(subject.connection.options.open_timeout).to eq(open_timeout)
+    end
+
+    it "sets ssl options" do
+      expect(subject.connection.ssl.verify).to eq(false)
     end
   end
 
